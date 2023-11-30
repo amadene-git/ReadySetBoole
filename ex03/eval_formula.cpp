@@ -130,12 +130,24 @@ void    clean_tree(t_node *root)
 
 }
 
+void    print_postfix(t_node *root)
+{
+    if (root->left != NULL)
+        print_postfix(root->left);
+    if (root->right != NULL)
+        print_postfix(root->right);
+
+    putchar(root->data);
+}
 bool    eval_formula(char *str)
 {
     t_node *tree = make_tree(str);
     bool ret = (bool)tree->value;
 
-   print_btree(tree);
+    print_btree(tree);
+
+    print_postfix(tree);
+    putchar('\n');
 
     clean_tree(tree);
   
