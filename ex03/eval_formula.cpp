@@ -5,27 +5,38 @@
 #include <stack>
 #include <sstream>
 
+#define BOOL 1
+#define OP 2
+
 
 typedef struct s_node
 {
     struct s_node   *left;
     struct s_node   *right;
-    char              value;
+    unsigned int    value;
+    char            data;
+    unsigned int    type;
 }               t_node;
 
-t_node *new_node(int value)
+t_node *new_node()
 {
     t_node *new_node = (t_node*)malloc(sizeof(t_node));
-    new_node->value = value;
-
+    new_node->left = NULL;
+    new_node->right = NULL;
+    new_node->value = 0;
+    new_node->data = 0;
+    new_node->type = 0;
     return (new_node);
 }
 
-
 void    gendot(int *ncount, std::stringstream &dotf, t_node *root, int id)
 {
-        dotf << "  node" << id << " [label=\"" << root->value << "\"]\n";
-
+        if (root->type == BOOL)
+            dotf << "  node" << id << " [label=\"" << root->data << "\"]\n";
+        else if (root->data == '!')
+            dotf << "  node" << id << " [label=\"" << root->data << root->left->value << " -> " << root->value << "\"]\n";
+        else 
+            dotf << "  node" << id << " [label=\"" << root->left->value << root->data << root->right->value << " -> " << root->value << "\"]\n";
 
         if (root->left != NULL)
         {
@@ -53,37 +64,88 @@ void    print_btree(t_node *root)
     int ncount = 0;
     gendot(&ncount, dotf, root, 0);
     dotf << "\n\n}";
+    
     std::stringstream tmp;
-
     tmp << "echo '" << dotf.str() << "' > tmp.dot";
+    
     system(tmp.str().c_str());
     system("rm -rf tree.png;");
     system("dot -Tpng -o tree.png tmp.dot");
-    // system("rm -rf tmp.dot");
+    system("rm -rf tmp.dot");
     system("xdg-open tree.png 2> /dev/null");
 }
 
 
-int main()
+t_node  *make_tree(char *expr)
 {
-    char expr[] = "101|&";
     std::stack<t_node*> my_stack;
     
     for (int i = 0; expr[i] != 0; i++)
     {
-        t_node *curr =  new_node(expr[i]); 
-        if (expr[i] == '&' || expr[i] == '|')
+        t_node *curr =  new_node();
+        curr->data = expr[i];
+        if (expr[i] == '0' || expr[i] == '1')
         {
-            curr->right = my_stack.top();
-            my_stack.pop();
-            
+            curr->value = expr[i] - '0'; 
+            curr->type = BOOL;
+        }
+        else
+        {
+            curr->type = OP;
             curr->left = my_stack.top();
             my_stack.pop();
+            if (expr[i] != '!')
+            {
+                curr->right = my_stack.top();
+                my_stack.pop();
+            }
+            if (expr[i] == '&')    
+                curr->value = curr->left->value & curr->right->value; 
+            else if (expr[i] == '|')    
+                curr->value = curr->left->value | curr->right->value; 
+            else if (expr[i] == '!')    
+                curr->value = !curr->left->value; 
+            else if (expr[i] == '^')    
+                curr->value = curr->left->value ^ curr->right->value; 
+            // else if (expr[i] == '>')    
+            //     curr->value = curr->left->value > curr->right->value; 
+            else if (expr[i] == '=')    
+                curr->value = curr->left->value == curr->right->value; 
+
         }
         my_stack.push(curr);
     }
+    return (my_stack.top());
+}
 
-    print_btree(my_stack.top());
+void    clean_tree(t_node *root)
+{
+
+    if (root->left != NULL)
+        clean_tree(root->left);
+    if (root->right != NULL)
+        clean_tree(root->right);
+
+    free(root);
+
+}
+
+bool    eval_formula(char *str)
+{
+    t_node *tree = make_tree(str);
+    bool ret = (bool)tree->value;
+
+   print_btree(tree);
+
+    clean_tree(tree);
+  
+    return (ret);
+}
+
+
+int main(int ac, char **av)
+{
+
     
-    printf("%s\n", expr);
+    printf("%s\n", (eval_formula(av[1]) == 1 ? "True" : "False"));
 }
