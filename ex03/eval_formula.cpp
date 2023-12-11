@@ -27,7 +27,7 @@ t_node  *make_tree(string expr)
             curr->type = BOOL;
             curr->value = expr[i] - '0';
         }
-        else if (expr[i] == '&' || expr[i] == '|' || expr[i] == '^' || expr[i] == '>' || expr[i] == '=')
+        else if (expr[i] == '&' || expr[i] == '|' || expr[i] == '^' || expr[i] == '>' || expr[i] == '=' || expr[i] == '!')
         {   
             if (expr[i] == '!') 
             {
@@ -74,18 +74,77 @@ t_node  *make_tree(string expr)
     return (stk.top());
 }
 
+
+bool    simple_eval(string str)
+{
+    stack<bool> stk;
+    bool        tmp;
+
+    for (int i = 0; i < (int)str.size(); i++)
+    {
+        if (str[i] == '0')
+            stk.push(false);
+        else if (str[i] == '1')
+            stk.push(true);
+        else if (str[i] == '!' && stk.size() >= 1)
+            stk.top() = !stk.top();
+        else if (str[i] == '&' && stk.size() >= 2)
+        {
+            tmp = stk.top();
+            stk.pop();
+            stk.top() = stk.top() & tmp;
+        }
+        else if (str[i] == '|' && stk.size() >= 2)
+        {
+            tmp = stk.top();
+            stk.pop();
+            stk.top() = stk.top() | tmp;
+        }
+        else if (str[i] == '^' && stk.size() >= 2)
+        {
+            tmp = stk.top();
+            stk.pop();
+            stk.top() = stk.top() ^ tmp;
+        }
+        else if (str[i] == '>' && stk.size() >= 2)
+        {
+            tmp = stk.top();
+            stk.pop();
+            stk.top() = (!stk.top()) | tmp;
+        }
+        else if (str[i] == '=' && stk.size() >= 2)
+        {
+            tmp = stk.top();
+            stk.pop();
+            stk.top() = stk.top() == tmp;
+        }
+        else
+        {
+            cerr << "Error: Bad character" << endl;
+            exit(1);
+        }
+    }
+
+    if (stk.size() != 1)
+    {
+            cerr << "Error: invalid formula" << endl;
+            exit(1);
+    }
+    return (stk.top());
+
+}
+
 bool    eval_formula(string str)
 {
-    t_node *tree = make_tree(str);
-    if (!tree)
-        exit_error(stack<t_node*>(), "Error making btree");
-    
-    bool ret = (bool)tree->value;
 
-    // print_btree(tree);
-    // print_postfix(tree);
+    return (simple_eval(str));
 
-    clean_tree(tree);
-  
-    return (ret);
+    // t_node *tree = make_tree(str);
+    // if (!tree)
+    //     exit_error(stack<t_node*>(), "Error making btree");
+    // bool ret = (bool)tree->value;
+    // // print_btree(tree);
+    // // print_postfix(tree);
+    // clean_tree(tree);  
+    // return (ret);
 }

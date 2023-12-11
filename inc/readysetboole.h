@@ -27,7 +27,7 @@ typedef struct s_node
 {
     struct s_node   *left;
     struct s_node   *right;
-    unsigned int    value;
+    bool            value;
     char            data;
     unsigned int    type;
 }               t_node;

@@ -4,7 +4,7 @@ int main(int ac, char **av)
 {
 
     if (ac != 2)
-        dprintf(2, "error bad arg\n");
+        cerr << "Error: 1 argument expected" << endl;
     else
-        printf("%s\n", (eval_formula(av[1]) == 1 ? "True" : "False"));
+        cout << eval_formula(av[1]) << endl;
 }

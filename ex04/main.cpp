@@ -1,8 +1,13 @@
 #include "readysetboole.h"
 
-int main()
+int main(int ac, char **av)
 {
 
-    print_truth_table("AB|C&");
+    if (ac != 2)
+    {
+        cerr << "Bad arg" << endl;
+        return (1);
+    }
+    print_truth_table(av[1]);
 
 }
