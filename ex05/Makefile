@@ -3,6 +3,7 @@ NAME		=	negation_normal_form
 SRCS		=	main.cpp\
 				negation_normal_form.cpp\
 				../ex03/eval_formula.cpp\
+				../ex04/print_truth_table.cpp\
 				../inc/utils.cpp\
 
 OBJS		=	${SRCS:.cpp=.o}

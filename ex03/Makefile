@@ -21,7 +21,7 @@ ${NAME}		:	${OBJS}
 					$(CC) ${INCLUDES} -o $@ -c $^ 
 
 clean		:
-					rm -rf ${OBJS} tree.png
+					rm -rf ${OBJS} 
 
 fclean		:	clean
 					rm -rf $(NAME)

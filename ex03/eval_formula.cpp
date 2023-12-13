@@ -137,14 +137,16 @@ bool    simple_eval(string str)
 bool    eval_formula(string str)
 {
 
-    return (simple_eval(str));
 
-    // t_node *tree = make_tree(str);
-    // if (!tree)
-    //     exit_error(stack<t_node*>(), "Error making btree");
-    // bool ret = (bool)tree->value;
-    // // print_btree(tree);
-    // // print_postfix(tree);
-    // clean_tree(tree);  
-    // return (ret);
+    t_node *tree = make_tree(str);
+    if (!tree)
+        exit_error(stack<t_node*>(), "Error making btree");
+    bool ret = (bool)tree->value;
+    // print_btree(tree);
+    // print_postfix(tree);
+    clean_tree(tree);  
+    return (ret);
+
+
+    return (simple_eval(str));
 }

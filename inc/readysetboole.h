@@ -27,9 +27,9 @@ typedef struct s_node
 {
     struct s_node   *left;
     struct s_node   *right;
-    bool            value;
+    int             value;
     char            data;
-    unsigned int    type;
+    int             type;
 }               t_node;
 
 
@@ -38,6 +38,7 @@ uint32_t multiplier(uint32_t a, uint32_t b);
 // gray machin faut l'ajouter la ...
 bool    eval_formula(string str);
 void    print_truth_table(string formula);
+string  negation_normal_form(char *str);
 
 
 
