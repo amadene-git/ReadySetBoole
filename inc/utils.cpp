@@ -24,30 +24,25 @@ void ft_putnbr_base(uint32_t nb, string base, uint32_t baselen)
 /////////////////////////////////////////////////////////
 //********************* BTree *************************//
 /////////////////////////////////////////////////////////
-t_node *new_node()
-{
-    t_node *new_node = (t_node*)malloc(sizeof(t_node));
-    new_node->left = NULL;
-    new_node->right = NULL;
-    new_node->value = 0;
-    new_node->data = 0;
-    new_node->type = 0;
-    return (new_node);
-}
 
-void    gendot(int *ncount, std::stringstream &dotf, t_node *root, int id)
+
+void    gendot(int *ncount, std::stringstream &dotf, Node *root, int id)
 {
         if (root->type == BOOL)
+        {
             dotf << "node" << id << " [label=\"" << root->data << "\"]\n";
-        else if (root->data == '!')
-            dotf << "node" << id << " [label=\"" << root->value << "    " << root->data << root->left->value << "\"]\n";
+        }
+        else if (root->value == -1)
+        {
+            dotf << "node" << id << " [label=\"" << root->str << "\"]\n";
+        }
         else 
-            dotf << "node" << id << " [label=\"" << root->value << "    " << root->left->value << root->data << root->right->value << "\"]\n";
-        
+            dotf << "node" << id << " [label=\"" << root->value << "    " << root->data << "\"]\n";
         if (root->value == 0)
             dotf << "node" << id << "[color=\"red\"]\n";
         else if (root->value == 1)
             dotf << "node" << id << "[color=\"green\"]\n";
+        
         if (root->left != NULL)
         {
             *ncount += 1;
@@ -62,8 +57,11 @@ void    gendot(int *ncount, std::stringstream &dotf, t_node *root, int id)
         }
 }
 
-void    print_btree(t_node *root)
+void    print_btree(Node *root)
 {
+    cout << "**** Print BTree postfix ****" << endl;
+    print_postfix(root);
+    cout << "\n" + string(28, '*') << endl;
     std::stringstream dotf;
     dotf << "digraph astgraph {\n\
     node [shape=box, fontsize=12, fontname=\"Courier\", height=.1, style=filled];\n\
@@ -84,7 +82,7 @@ void    print_btree(t_node *root)
     system("xdg-open tree.png 2> /dev/null");
 }
 
-void    clean_tree(t_node *root)
+void    clean_tree(Node *root)
 {
     if (!root)
         return;
@@ -92,10 +90,10 @@ void    clean_tree(t_node *root)
         clean_tree(root->left);
     if (root->right != NULL)
         clean_tree(root->right);
-    free(root);
+    delete root;
 }
 
-void    print_postfix(t_node *root)
+void    print_postfix(Node *root)
 {
     if (!root)
         return;

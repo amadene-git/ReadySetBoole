@@ -1,77 +1,111 @@
 #include "readysetboole.h"
 
-void    exit_error(stack<t_node*> stk, string mes = "")
+Node    *exit_error(vector<Node*> &stk, string mes = "")
 {
     while (stk.size())
     {
-        free(stk.top());
-        stk.pop();
+        delete stk.back();
+        stk.pop_back();
     }
     cerr << mes << endl;
-    exit(1);
+    return(NULL);
 }
 
-t_node  *make_tree(string expr)
+Node  *make_tree(char *expr)
 {
-    stack<t_node*> stk;
-    stack<t_node*> garbage;
-    t_node *curr =  NULL;
+    vector<Node*> stk;
+    vector<Node*> garbage;
+    Node *curr =  NULL;
+
 
     for (int i = 0; expr[i] != 0; i++)
     {
-        curr =  new_node();
-        garbage.push(curr);
-        curr->data = expr[i];
+        curr =  new Node(expr[i]);
+        garbage.push_back(curr);
+
         if (expr[i] == '0' || expr[i] == '1')
         {
             curr->type = BOOL;
+            if (expr[i] == '1')
+                curr->str = "1";
+            if (expr[i] == '0')
+                curr->str = "0";
             curr->value = expr[i] - '0';
         }
-        else if (expr[i] == '&' || expr[i] == '|' || expr[i] == '^' || expr[i] == '>' || expr[i] == '=' || expr[i] == '!')
-        {   
-            if (expr[i] == '!') 
-            {
-                if (stk.size() < 1)
-                    exit_error(garbage, "Error: not enough operands");
-                            
-                curr->type = OP;
-                curr->left = stk.top();
-                stk.pop();
-    
-                curr->value = !curr->left->value;
-            }
-            else
-            {
-                if (stk.size() < 2)
-                    exit_error(garbage, "Error: not enough boolean");
-                
-                curr->type = OP;
-                curr->right = stk.top();
-                stk.pop();
-                curr->left = stk.top();
-                stk.pop();
+        else if (expr[i] >= 'A' && expr[i] <= 'Z')
+        {
+            curr->type = VAR;
+            curr->value = -1;
+            curr->str = string(1, expr[i]);
+        }
+        else if (expr[i] == '!') 
+        {
+            if (stk.size() < 1)
+                return (exit_error(garbage, "Error: not enough operands"));
+                        
+            curr->type = NOT;
+            curr->left = stk.back();
+            stk.pop_back();
 
-                if (expr[i] == '&')    
+            curr->str = "!(" + curr->left->str + ")"; 
+            if (curr->left->value != -1)
+                curr->value = !curr->left->value;
+        }
+        else if (expr[i] == '&' || expr[i] == '|' || expr[i] == '^' || expr[i] == '>' || expr[i] == '=')
+        {     
+            if (stk.size() < 2)
+                return (exit_error(garbage, "Error: not enough boolean"));
+            
+            curr->right = stk.back();
+            stk.pop_back();
+            curr->left = stk.back();
+            stk.pop_back();
+            
+            if (expr[i] == '&')
+            {    
+                curr->type = AND;
+                curr->str = "(" + curr->left->str + " & " + curr->right->str + ")";
+                if (curr->left->value != -1 && curr->right->value  != -1)
                     curr->value = curr->left->value & curr->right->value; 
-                else if (expr[i] == '|')    
+            }
+            else if (expr[i] == '|')
+            {    
+                curr->type = OR;
+                curr->str = "(" + curr->left->str + " | " + curr->right->str + ")";
+                if (curr->left->value != -1 && curr->right->value  != -1)
                     curr->value = curr->left->value | curr->right->value; 
-                else if (expr[i] == '^')    
+            }
+            else if (expr[i] == '^')
+            {    
+                curr->type = XOR;
+                curr->str = "(" + curr->left->str + " ^ " + curr->right->str + ")";
+                if (curr->left->value != -1 && curr->right->value  != -1)
                     curr->value = curr->left->value ^ curr->right->value; 
-                else if (expr[i] == '>')    
+            }
+            else if (expr[i] == '>')
+            {    
+                curr->type = IMPLY;
+                curr->str = "(" + curr->left->str + " > " + curr->right->str + ")";
+                if (curr->left->value != -1 && curr->right->value  != -1)
                     curr->value = (!curr->left->value) | (curr->right->value);// p=>q <=> (!p)|q
-                else if (expr[i] == '=')    
+            }
+            else if (expr[i] == '=')
+            {    
+                curr->type = EQUAL;
+                curr->str = "(" + curr->left->str + " = " + curr->right->str + ")";
+                if (curr->left->value != -1 && curr->right->value  != -1)
                     curr->value = curr->left->value == curr->right->value; 
             }
         }
         else
-            exit_error(garbage, "Error: bad character");
-        stk.push(curr);
+            return (exit_error(garbage, "Error: bad character"));
+        stk.push_back(curr);
     }
-    
     if (stk.size() != 1)
-        exit_error(garbage, "Error: too much boolean");
+        return (exit_error(garbage, "Error: too much boolean"));
+   
         
-    return (stk.top());
+    return (stk.back());
 }
 
 
@@ -134,16 +168,18 @@ bool    simple_eval(string str)
 
 }
 
-bool    eval_formula(string str)
+bool    eval_formula(char *str)
 {
 
 
-    t_node *tree = make_tree(str);
-    if (!tree)
-        exit_error(stack<t_node*>(), "Error making btree");
+    Node *tree = make_tree(str);
+    if (tree == NULL)
+        return (false);
+
     bool ret = (bool)tree->value;
-    // print_btree(tree);
-    // print_postfix(tree);
+    print_btree(tree);
+    print_postfix(tree);
+    cout << endl;
     clean_tree(tree);  
     return (ret);
 

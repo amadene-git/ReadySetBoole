@@ -34,6 +34,6 @@ void    print_truth_table(string formula)
 
         for (int i = 0; i < (int)var.size(); i++)
             cout << "| " << alpha[var[i]] << " ";
-        cout << "| " << eval_formula(tmp) << " |" << endl;
+        cout << "| " << eval_formula((char*)tmp.c_str()) << " |" << endl;
     }
 }

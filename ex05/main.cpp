@@ -8,13 +8,13 @@ int main(int ac, char **av)
         return (1);
     }
 
-    cout << av[1] << endl;
-    print_truth_table(av[1]);
+    // cout << av[1] << endl;
+    // print_truth_table(av[1]);
 
 
     string str = negation_normal_form(av[1]); 
     cout << str << endl;
-    print_truth_table(str);
+    // print_truth_table(str);
 
 
 
