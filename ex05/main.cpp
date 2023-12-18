@@ -8,13 +8,16 @@ int main(int ac, char **av)
         return (1);
     }
 
-    // cout << av[1] << endl;
-    // print_truth_table(av[1]);
+    string str = negation_normal_form(av[1]);
 
-
-    string str = negation_normal_form(av[1]); 
-    cout << str << endl;
-    // print_truth_table(str);
+    if (str.size() == 0)
+    {
+        cout << "Error: invalid formula" << endl;
+        return (0); 
+    }
+    cout << "main ret: "<< str << endl;
+    cout << str_truth_table(av[1]) << endl;
+    cout << str_truth_table(str) << endl;
 
 
 

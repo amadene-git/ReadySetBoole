@@ -25,81 +25,89 @@ void ft_putnbr_base(uint32_t nb, string base, uint32_t baselen)
 //********************* BTree *************************//
 /////////////////////////////////////////////////////////
 
-
-void    gendot(int *ncount, std::stringstream &dotf, Node *root, int id)
+Node    *exit_error(vector<Node*> &stk, string mes = "")
 {
-        if (root->type == BOOL)
+    while (stk.size())
+    {
+        delete stk.back();
+        stk.pop_back();
+    }
+    cerr << mes << endl;
+    return(NULL);
+}
+
+
+
+
+Node  *make_tree(char *expr)
+{
+    vector<Node*> stk;
+    vector<Node*> garbage;
+    Node *curr =  NULL;
+
+
+    for (int i = 0; expr[i] != 0; i++)
+    {
+        curr =  new Node(expr[i]);
+        garbage.push_back(curr);
+
+        if (expr[i] == '0' || expr[i] == '1')
         {
-            dotf << "node" << id << " [label=\"" << root->data << "\"]\n";
+            curr->type = BOOL;
+            if (expr[i] == '1')
+                curr->str = "1";
+            if (expr[i] == '0')
+                curr->str = "0";
+            curr->value = expr[i] - '0';
         }
-        else if (root->value == -1)
+        else if (expr[i] >= 'A' && expr[i] <= 'Z')
         {
-            dotf << "node" << id << " [label=\"" << root->str << "\"]\n";
+            curr->type = VAR;
+            curr->value = -1;
+            curr->str = string(1, expr[i]);
         }
-        else 
-            dotf << "node" << id << " [label=\"" << root->value << "    " << root->data << "\"]\n";
-        if (root->value == 0)
-            dotf << "node" << id << "[color=\"red\"]\n";
-        else if (root->value == 1)
-            dotf << "node" << id << "[color=\"green\"]\n";
+        else if (expr[i] == '!') 
+        {
+            if (stk.size() < 1)
+                return (exit_error(garbage, "Error: not enough operands"));
+
+            *curr = !(*stk.back());
+            stk.pop_back();
+
+        }
+        else if (expr[i] == '&' || expr[i] == '|' || expr[i] == '^' || expr[i] == '>' || expr[i] == '=')
+        {     
+            if (stk.size() < 2)
+                return (exit_error(garbage, "Error: not enough boolean"));
+            
+            curr->right = stk.back();
+            stk.pop_back();
+            curr->left = stk.back();
+            stk.pop_back();
+            
+            if (expr[i] == '&')
+                *curr = *curr->left & *curr->right;
+            else if (expr[i] == '|')
+                *curr = *curr->left | *curr->right;
+            else if (expr[i] == '^')
+                *curr = *curr->left ^ *curr->right;
+            else if (expr[i] == '>')
+                *curr = *curr->left > *curr->right;
+            else if (expr[i] == '=')
+                *curr = *curr->left == *curr->right;
+        }
+        else
+            return (exit_error(garbage, "Error: bad character"));
+        stk.push_back(curr);
+    }
+    if (stk.size() != 1)
+        return (exit_error(garbage, "Error: too much boolean"));
+   
         
-        if (root->left != NULL)
-        {
-            *ncount += 1;
-            dotf << "node" << id << " -> node" << *ncount << "\n";
-            gendot(ncount, dotf, root->left, *ncount);
-        }
-        if (root->right != NULL)
-        {
-            *ncount += 1;
-            dotf << "node" << id << " -> node" << *ncount << "\n";
-            gendot(ncount, dotf, root->right, *ncount);
-        }
+    return (stk.back());
 }
 
-void    print_btree(Node *root)
-{
-    cout << "**** Print BTree postfix ****" << endl;
-    print_postfix(root);
-    cout << "\n" + string(28, '*') << endl;
-    std::stringstream dotf;
-    dotf << "digraph astgraph {\n\
-    node [shape=box, fontsize=12, fontname=\"Courier\", height=.1, style=filled];\n\
-    ranksep=.5;\n\
-    edge [dir=both, arrowsize=.5, arrowhead=none]\n\n";
 
-    int ncount = 0;
-    gendot(&ncount, dotf, root, 0);
-    dotf << "\n\n}";
-    
-    std::stringstream tmp;
-    tmp << "echo '" << dotf.str() << "' > tmp.dot";
-    
-    system(tmp.str().c_str());
-    system("rm -rf tree.png;");
-    system("dot -Tpng -o tree.png tmp.dot");
-    system("rm -rf tmp.dot");
-    system("xdg-open tree.png 2> /dev/null");
-}
 
-void    clean_tree(Node *root)
-{
-    if (!root)
-        return;
-    if (root->left != NULL)
-        clean_tree(root->left);
-    if (root->right != NULL)
-        clean_tree(root->right);
-    delete root;
-}
 
-void    print_postfix(Node *root)
-{
-    if (!root)
-        return;
-    if (root->left != NULL)
-        print_postfix(root->left);
-    if (root->right != NULL)
-        print_postfix(root->right);
-    cout << root->data;
-}
+

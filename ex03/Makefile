@@ -2,6 +2,7 @@ NAME		=	eval_formula
 
 SRCS		=	main.cpp\
 				eval_formula.cpp\
+				../ex04/print_truth_table.cpp\
 				../inc/utils.cpp\
 
 OBJS		=	${SRCS:.cpp=.o}
@@ -21,7 +22,7 @@ ${NAME}		:	${OBJS}
 					$(CC) ${INCLUDES} -o $@ -c $^ 
 
 clean		:
-					rm -rf ${OBJS} 
+					rm -rf ${OBJS} *.png *.log
 
 fclean		:	clean
 					rm -rf $(NAME)
