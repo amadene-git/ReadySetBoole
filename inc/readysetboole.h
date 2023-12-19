@@ -27,6 +27,8 @@ using namespace std;
 # include <stdint.h>
 # include <time.h>
 
+
+
 uint32_t adder(uint32_t a, uint32_t b);
 uint32_t multiplier(uint32_t a, uint32_t b);
 // gray machin faut l'ajouter la ...
@@ -34,18 +36,7 @@ bool    eval_formula(char *str);
 void    print_truth_table(string formula);
 string  negation_normal_form(char *str);
 
-
-
-
 # include "Btree.hpp"
-
-
-
-
-
-
-
-
 
 
 

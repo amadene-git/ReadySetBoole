@@ -1,38 +1,32 @@
 #ifndef BTREE_HPP
 # define BTREE_HPP
 
-class Node;
-class CNF;
+template <typename T>
+T    *dup_tree(T *root)
+{
+    T *node = new T(*root);    
+    
+    
+    if (root->left != NULL)
+        node->left = dup_tree(root->left);
+    if (root->right != NULL)
+        node->right = dup_tree(root->right);
 
-#include "Node.hpp"
-#include "CNF.hpp"
-
-
-
-
+    return (node);
+}
 
 template <typename T>
-void    clean_tree(T *root, vector<void*> &garbage)
+void    clean_tree(T *root)
 {
     if (!root)
         return;
     if (root->left != NULL)
-        clean_tree(root->left, garbage);
+        clean_tree(root->left);
     if (root->right != NULL)
-        clean_tree(root->right, garbage);
-    
-    if (find(garbage.begin(), garbage.end(), (void*)root) == garbage.end())
-    {
-        
-    delete root;
-    garbage.push_back((void*)root);
-    }
-    // else
-    // {
-    //     cout << "FOUND " << endl;
-    // }
-}
+        clean_tree(root->right);
 
+    delete root;
+}
 
 template <typename T>
 string treetostr(T *root)
@@ -126,6 +120,10 @@ void    gendot(int *ncount, std::stringstream &dotf, T *root, int id)
 }
 
 
+class Node;
+class CNF;
 
+#include "Node.hpp"
+#include "NNF.hpp"
 
 #endif

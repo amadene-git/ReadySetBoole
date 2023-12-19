@@ -17,30 +17,27 @@
 */
 
 
-CNF *make_CNF_tree(Node *root)
+NNF *make_CNF_tree(Node *root)
 {
-    CNF *node = NULL;
-    CNF *left = NULL;
-    CNF *right = NULL;
-    // CNF *tmp = NULL;
-
+    NNF *node = NULL;
+    NNF *left = NULL;
+    NNF *right = NULL;
 
     if (root->left)
         left = make_CNF_tree(root->left);
     if (root->right)
         right = make_CNF_tree(root->right);
     
-    node = new CNF(root->data, root->str, root->type, left, right, root->value);
-    
+    node = new NNF(root->data, root->str, root->type, left, right, root->value);    
     if (node->type == NOT) 
         *node = !*node->left;
     else if (node->type == XOR)
         *node = *node->left ^ *node->right;
-    // else if (node->type == IMPLY)
-    //     *node = *node->left > *node->right;
-    // else if (node->type == EQUAL)
-    //     *node = *node->left == *node->right;
-    
+    else if (node->type == IMPLY)
+        *node = *node->left > *node->right;
+    else if (node->type == EQUAL)
+        *node = *node->left == *node->right;
+
     return (node);
 }
 
@@ -51,17 +48,13 @@ string  negation_normal_form(char *str)
     if (!tree)
         return ("");
 
-    print_btree<Node>(tree, "tree.png");
+    NNF *nnftree = make_CNF_tree(tree);
+    if (!nnftree)
+        return ("");
+    string ret = treetostr(nnftree);
 
-    CNF *cnftree = make_CNF_tree(tree);
-
-    print_btree<CNF>(cnftree, "cnftree.png");
-
-    string ret = treetostr(cnftree);
-
-    vector<void*> garbage;
-    clean_tree(tree, garbage);
-    clean_tree(cnftree, garbage);
+    clean_tree(tree);
+    clean_tree(nnftree);
 
     return (ret);
 }

@@ -1,16 +1,12 @@
-#ifndef CNF_HPP
-# define CNF_HPP
+#ifndef NNF_HPP
+# define NNF_HPP
 
-# include "Node.hpp"
+# include "Btree.hpp"
 
-template <typename T>
-void    print_btree(T *root, string filename = "tree.png");
-
-
-class CNF : public Node
+class NNF : public Node
 {
     public:
-        CNF(char data = 0, string str = "", int type = -1, CNF *left = NULL, CNF *right = NULL, int value = -1)
+        NNF(char data = 0, string str = "", int type = -1, NNF *left = NULL, NNF *right = NULL, int value = -1)
         {
             this->data = data;
             this->str = str;
@@ -20,13 +16,13 @@ class CNF : public Node
             this->value = value;
         };
 
-        CNF(CNF const &rhs)
+        NNF(NNF const &rhs)
         {
-            cout << "CNF Copy constructor called -> " << this << endl;
+            // cout << "NNF Copy constructor called -> " << this << endl;
             *this = rhs;
         };
         
-        CNF& operator=(CNF const &rhs)
+        NNF& operator=(NNF const &rhs)
         {
             if (&rhs != this)
             {
@@ -39,37 +35,32 @@ class CNF : public Node
             }
             return (*this);
         };
-        
-        
-        CNF operator!()
+
+        NNF operator!()
         {
-            CNF ret = *this;
+            NNF ret = *this;
             
-            cout << "CNF operation: NOT " << this << endl;
+            // cout << "NNF operation: NOT " << this << endl;
             if (this->type == NOT)// !!A = A
             {
-                cout << "NOT VAR " << this << endl;
                 ret = *this->left;
-                // delete this->left;
+                delete this->left;
             }
             else if (this->type == AND)// !(A & B) -> !A | !B;
             {
-                CNF *A = new CNF(!*this->left);
-                CNF *B = new CNF(!*this->right);
+                NNF *A = new NNF(!*this->left);
+                NNF *B = new NNF(!*this->right);
                 ret = *A | *B;
-                
             }
             else if (this->type == OR)// !(A | B) -> !A & !B;
             {
-                CNF *A = new CNF(!*this->left);
-                CNF *B = new CNF(!*this->right);
+                NNF *A = new NNF(!*this->left);
+                NNF *B = new NNF(!*this->right);
                 ret = *A & *B;
-                
             }
             else
             {
-
-                cout << "CNF operation: NOT " << this << endl;
+                // cout << "NNF operation: NOT " << this << endl;
                 ret.type = NOT;
                 ret.data = '!';
                 ret.left = this;
@@ -81,58 +72,71 @@ class CNF : public Node
                 return (ret);
             }
             
-            // delete this;
+            delete this;
             return (ret);
         };
-        CNF operator|(CNF const &rhs)
+        NNF operator|(NNF const &rhs)
         {
-            CNF ret;
+            NNF ret;
 
-            cout << "CNF operation: OR " << this << " | " << &rhs << endl;
+            // cout << "NNF operation: OR " << this << " | " << &rhs << endl;
             ret.type = OR;
             ret.data = '|';
             ret.left = this;
-            ret.right = (CNF*)&rhs;
+            ret.right = (NNF*)&rhs;
             ret.str = "(" + this->str + " | " + rhs.str + ")";
             if (this->value != -1 && rhs.value != -1)
                 ret.value = this->value | rhs.value;
-            
+
             return (ret);
         };
-        CNF operator&(CNF const &rhs)
+        NNF operator&(NNF const &rhs)
         {
-            CNF ret;
+            NNF ret;
 
-            cout << "CNF operation: AND " << this << " & " << &rhs << endl;
+            // cout << "NNF operation: AND " << this << " & " << &rhs << endl;
             ret.type = AND;
             ret.data = '&';
             ret.left = this;
-            ret.right = (CNF*)&rhs;
+            ret.right = (NNF*)&rhs;
             ret.str = "(" + this->str + " & " + rhs.str + ")";
             if (this->value != -1 && rhs.value != -1)
                 ret.value = this->value & rhs.value;
-            
+
             return (ret);
         };
-        CNF operator^(CNF &rhs)// A ^ B -> (!A &  B )  |  ( A & !B )
+        NNF operator^(NNF &rhs)// A ^ B -> (!A &  B )  |  ( A & !B )
         {
-            CNF ret;
+            NNF ret;
+            NNF *A = new NNF( *(new NNF(!*dup_tree(this))) & rhs );
+            NNF *B = new NNF( *this   & *(new NNF(!*dup_tree(&rhs))) );
+            ret = *A | *B;
 
-            CNF *A = new CNF( *(new CNF(!*(new CNF(*this)))) & *(new CNF(rhs)));
-            CNF *B = new CNF( *(new CNF(*this))   & *(new CNF(!*(new CNF(rhs)))));
-            
-            ret = *(new CNF(*A | *B));
-            // delete this;
-            // delete &rhs;
-            
             return (ret);
+        };
+        NNF operator>(NNF &rhs)//    A > B  ->  !A |  B 
+        {
+            // cout << "NNF operation: IMPY " << this << " > " << &rhs << endl;
+            NNF ret;
+            NNF *A = new NNF(!*this);
+            ret = *A | rhs;
 
+            return (ret);
+        };        
+        NNF operator==(NNF &rhs)// A = B  -> ( A &  B )  |  (!A & !B )
+        {
+            NNF ret;
+            NNF *A = new NNF( *this & rhs );
+            NNF *B = new NNF(*(new NNF(!*dup_tree(this))) & *(new NNF(!*dup_tree(&rhs))));
+            ret = *A | *B;
+
+            return (ret);
         };
 
-        ~CNF() {};
+        ~NNF() {};
 
-        CNF *left;
-        CNF *right;
+        NNF *left;
+        NNF *right;
 };
 
 
