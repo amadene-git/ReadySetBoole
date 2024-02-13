@@ -17,16 +17,16 @@
 */
 
 
-NNF *make_CNF_tree(Node *root)
+NNF *make_NNF_tree(Node *root)
 {
     NNF *node = NULL;
     NNF *left = NULL;
     NNF *right = NULL;
 
     if (root->left)
-        left = make_CNF_tree(root->left);
+        left = make_NNF_tree(root->left);
     if (root->right)
-        right = make_CNF_tree(root->right);
+        right = make_NNF_tree(root->right);
     
     node = new NNF(root->data, root->str, root->type, left, right, root->value);    
     if (node->type == NOT) 
@@ -48,7 +48,7 @@ string  negation_normal_form(char *str)
     if (!tree)
         return ("");
 
-    NNF *nnftree = make_CNF_tree(tree);
+    NNF *nnftree = make_NNF_tree(tree);
     if (!nnftree)
         return ("");
     string ret = treetostr(nnftree);

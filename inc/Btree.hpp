@@ -57,7 +57,7 @@ void    print_postfix(T *root)
 }
 
 template <typename T>
-void    print_btree(T *root, string filename)
+void    print_btree(T *root, string filename = "tree.png")
 {
     stringstream dotf;
     string str = treetostr(root);
@@ -121,9 +121,11 @@ void    gendot(int *ncount, std::stringstream &dotf, T *root, int id)
 
 
 class Node;
+class NNF;
 class CNF;
 
 #include "Node.hpp"
 #include "NNF.hpp"
+#include "CNF.hpp"
 
 #endif

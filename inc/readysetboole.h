@@ -34,7 +34,9 @@ uint32_t multiplier(uint32_t a, uint32_t b);
 // gray machin faut l'ajouter la ...
 bool    eval_formula(char *str);
 void    print_truth_table(string formula);
-string  negation_normal_form(char *str);
+string  negation_normal_form(char *formula);
+string conjunctive_normal_form(char *formula);
+
 
 # include "Btree.hpp"
 
@@ -44,7 +46,9 @@ string  negation_normal_form(char *str);
 void    ft_putnbr_base(uint32_t nb, string base, uint32_t baselen = 0);
 
 
-Node  *make_tree(char *expr);
+Node    *make_tree(char *expr);
+NNF     *make_NNF_tree(Node *node);
+CNF     *make_CNF_tree(NNF *nnftree);
 string  str_truth_table(string formula);
 
 
