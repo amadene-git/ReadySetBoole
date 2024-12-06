@@ -1,33 +1,46 @@
-#include "readysetboole.h"
+#include "adder.h"
+#include <limits>
 
 int main()
 {
-try {
-    uint32_t a;
-    uint32_t b;
-    uint32_t c;
-    srand(time(NULL));
+	if (adder(0, 0) != 0)
+		throw std::runtime_error("0 + 0 Error");
 
-    for (int i = 0; i < 2000000 && i >= 0; i++)
-    {
-        c = (uint32_t)rand() % 2147483648;
-        b = (uint32_t)rand() % 2147483648;
-        a = c % b;
-        b = b % c;
-    
-        c = adder(a, b);
-        cout << i << ".  " << a << " + " << b  << " = " << c << endl;
-        if (c != a + b)
-            i = 0;
-    }
+	try
+	{
+		uint32_t a;
+		uint32_t b;
+		uint32_t c;
+		srand(time(NULL));
 
-    // cout << adder(0, 0) << endl;
-    // cout << adder(0, 1) << endl;
-    // cout << adder(1, 0) << endl;
-    // cout << adder(2147483648, 2147483647) << endl;
-    // cout << adder(4294967294, 1) << endl;
-    // cout << adder(4294967294, 2) << endl;
-}catch(exception &e) {cerr << e.what() << endl;}
+		for (int i = 0; i < 200 && i >= 0; i++)
+		{
+			c = (uint32_t)rand() % 2147483648;
+			b = (uint32_t)rand() % 2147483648;
+			a = c % b;
+			b = b % c;
 
-    return (0);
+			c = adder(a, b);
+			std::cout << i << ".  " << a << " + " << b << " = " << c << std::endl;
+			if (c != a + b)
+				throw std::runtime_error(std::to_string(a) + " + " + std::to_string(b) + " != " + std::to_string(c));
+		}
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+
+	try
+	{
+		uint32_t max = std::numeric_limits<uint32_t>::max();
+
+		adder(1, max);
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+
+	return (0);
 }

@@ -19,13 +19,11 @@ void ft_putnbr_base(uint32_t nb, string base, uint32_t baselen)
     cout << base[nb % baselen];
 }
 
-
-
 /////////////////////////////////////////////////////////
 //********************* BTree *************************//
 /////////////////////////////////////////////////////////
 
-Node    *exit_error(vector<Node*> &stk, string mes = "")
+Node *exit_error(vector<Node *> &stk, string mes = "")
 {
     while (stk.size())
     {
@@ -33,22 +31,18 @@ Node    *exit_error(vector<Node*> &stk, string mes = "")
         stk.pop_back();
     }
     cerr << mes << endl;
-    return(NULL);
+    return (NULL);
 }
 
-
-
-
-Node  *make_tree(char *expr)
+Node *make_tree(char *expr)
 {
-    vector<Node*> stk;
-    vector<Node*> garbage;
-    Node *curr =  NULL;
-
+    vector<Node *> stk;
+    vector<Node *> garbage;
+    Node *curr = NULL;
 
     for (int i = 0; expr[i] != 0; i++)
     {
-        curr =  new Node(expr[i]);
+        curr = new Node(expr[i]);
         garbage.push_back(curr);
 
         if (expr[i] == '0' || expr[i] == '1')
@@ -66,25 +60,24 @@ Node  *make_tree(char *expr)
             curr->value = -1;
             curr->str = string(1, expr[i]);
         }
-        else if (expr[i] == '!') 
+        else if (expr[i] == '!')
         {
             if (stk.size() < 1)
                 return (exit_error(garbage, "Error: not enough operands"));
 
             *curr = !(*stk.back());
             stk.pop_back();
-
         }
         else if (expr[i] == '&' || expr[i] == '|' || expr[i] == '^' || expr[i] == '>' || expr[i] == '=')
-        {     
+        {
             if (stk.size() < 2)
                 return (exit_error(garbage, "Error: not enough boolean"));
-            
+
             curr->right = stk.back();
             stk.pop_back();
             curr->left = stk.back();
             stk.pop_back();
-            
+
             if (expr[i] == '&')
                 *curr = *curr->left & *curr->right;
             else if (expr[i] == '|')
@@ -102,12 +95,6 @@ Node  *make_tree(char *expr)
     }
     if (stk.size() != 1)
         return (exit_error(garbage, "Error: too much boolean"));
-   
-        
+
     return (stk.back());
 }
-
-
-
-
-

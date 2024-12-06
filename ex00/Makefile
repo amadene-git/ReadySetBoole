@@ -2,25 +2,19 @@ NAME		=	adder
 
 SRCS		=	main.cpp\
 				adder.cpp\
-				../inc/utils.cpp\
+
 
 OBJS		=	${SRCS:.cpp=.o}
 
-INCLUDES	= 	-I ../inc/
-
-CC			=	clang++ -gdwarf-4 -Wall -Wextra -Werror 
-
-
-
-
+CC			=	g++ -Wall -Wextra -Werror
 
 all			:	${NAME}
 
-${NAME}		:	${OBJS} 
-					${CC} $(INCLUDES) -o $@ $^ 
+${NAME}		:	${OBJS}
+					${CC} $(INCLUDES) -o $@ $^
 
 %.o			:	%.cpp
-					$(CC) ${INCLUDES} -o $@ -c $^ 
+					$(CC) ${INCLUDES} -o $@ -c $^
 
 clean		:
 					rm -rf ${OBJS}
@@ -30,4 +24,4 @@ fclean		:	clean
 
 re			:	fclean all
 
-.PHONY		:	all clean fclean re 
+.PHONY		:	all clean fclean re
