@@ -1,11 +1,7 @@
 #!/bin/bash
 
-
-
 ret=0;
 i=0;
-
-
 c="valgrind --leak-check=full  --show-leak-kinds=all -s ./eval_formula";
 tab=(   [0]="$c 0"\
         [1]="$c 1"\
@@ -13,9 +9,7 @@ tab=(   [0]="$c 0"\
         [3]="$c '01|&!'"\
         [4]="$c '01|&!01|!!!0&'");
 
-
 make
-
 
 while [ $ret -eq "0" ] && [ $i -ne ${#tab[*]} ]
 do
