@@ -42,13 +42,9 @@ string conjunctive_normal_form(char *formula);
 
 
 
-// *** Utils *** //
-void    ft_putnbr_base(uint32_t nb, string base, uint32_t baselen = 0);
-
-
 Node    *make_tree(char *expr);
 NNF     *make_NNF_tree(Node *node);
-CNF     *make_CNF_tree(NNF *nnftree);
+ConjunctiveNormalForm     *make_ConjunctiveNormalForm_tree(NNF *nnftree);
 string  str_truth_table(string formula);
 
 

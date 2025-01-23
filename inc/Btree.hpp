@@ -122,10 +122,10 @@ void    gendot(int *ncount, std::stringstream &dotf, T *root, int id)
 
 class Node;
 class NNF;
-class CNF;
+class ConjunctiveNormalForm;
 
 #include "Node.hpp"
 #include "NNF.hpp"
-#include "CNF.hpp"
+#include "ConjunctiveNormalForm.hpp"
 
 #endif

@@ -27,16 +27,14 @@ int main() {
     std::cerr << e.what() << std::endl;
   }
 
-  // try // **** testing overflow error
-  // {
-  // 	uint32_t max = std::numeric_limits<uint32_t>::max();
+  try  // **** testing overflow error
+  {
+    uint32_t max = std::numeric_limits<uint32_t>::max();
 
-  // 	adder(1, max);
-  // }
-  // catch (std::exception &e)
-  // {
-  // 	std::cerr << e.what() << std::endl;
-  // }
+    adder(1, max);
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+  }
 
   return (0);
 }

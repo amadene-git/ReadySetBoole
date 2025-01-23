@@ -1,17 +1,17 @@
 #include "readysetboole.h"
 
-CNF *make_CNF_tree(NNF *root)
+ConjunctiveNormalForm *make_ConjunctiveNormalForm_tree(NNF *root)
 {
-    CNF *node = NULL;
-    CNF *left = NULL;
-    CNF *right = NULL;
+    ConjunctiveNormalForm *node = NULL;
+    ConjunctiveNormalForm *left = NULL;
+    ConjunctiveNormalForm *right = NULL;
 
     if (root->left)
-        left = make_CNF_tree(root->left);
+        left = make_ConjunctiveNormalForm_tree(root->left);
     if (root->right)
-        right = make_CNF_tree(root->right);
+        right = make_ConjunctiveNormalForm_tree(root->right);
     
-    node = new CNF(root->data, root->str, root->type, left, right, root->value);    
+    node = new ConjunctiveNormalForm(root->data, root->str, root->type, left, right, root->value);    
     if (node->type == AND)
         *node = *node->left & *node->right;
     
@@ -32,15 +32,15 @@ string conjunctive_normal_form(char *formula)
 {
     Node *tree = make_tree(formula);
     NNF *nnftree = make_NNF_tree(tree);
-    CNF *cnftree = make_CNF_tree(nnftree);
+    ConjunctiveNormalForm *ConjunctiveNormalFormtree = make_ConjunctiveNormalForm_tree(nnftree);
     
-    print_btree<CNF>(cnftree);
+    print_btree<ConjunctiveNormalForm>(ConjunctiveNormalFormtree);
 
 
-    string ret = treetostr(cnftree);
+    string ret = treetostr(ConjunctiveNormalFormtree);
     clean_tree<Node>(tree);
     clean_tree<NNF>(nnftree);
-    clean_tree<CNF>(cnftree);
+    clean_tree<ConjunctiveNormalForm>(ConjunctiveNormalFormtree);
 
     return (ret);
 }

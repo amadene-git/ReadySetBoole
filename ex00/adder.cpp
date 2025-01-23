@@ -15,9 +15,11 @@ uint32_t adder(uint32_t a, uint32_t b) {
       ret = ret | (1 << (i + 1));
   }
 
-  if ((result < a) | (result < b))
-    throw std::overflow_error("adder(): Overflow error");
-
+  if ((result < a) | (result < b)) {
+    std::ostringstream oss;
+    oss << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << "()";
+    throw std::overflow_error(oss.str());
+  }
   return (result);
 }
 

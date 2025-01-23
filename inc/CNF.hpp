@@ -1,12 +1,12 @@
 #include "Btree.hpp"
 
-class CNF : public NNF
+class ConjunctiveNormalForm : public NNF
 {
   
     public:
 
-    ~CNF(){};
-    CNF(char data = 0, string str = "", int type = -1, CNF *left = NULL, CNF *right = NULL, int value = -1)
+    ~ConjunctiveNormalForm(){};
+    ConjunctiveNormalForm(char data = 0, string str = "", int type = -1, ConjunctiveNormalForm *left = NULL, ConjunctiveNormalForm *right = NULL, int value = -1)
     {
         this->data = data;
         this->str = str;
@@ -15,13 +15,13 @@ class CNF : public NNF
         this->right = right;
         this->value = value;
     };
-    CNF(CNF const &copy)
+    ConjunctiveNormalForm(ConjunctiveNormalForm const &copy)
     {
         *this = copy;
     };
-    CNF& operator=(CNF const &rhs)
+    ConjunctiveNormalForm& operator=(ConjunctiveNormalForm const &rhs)
     {
-        // cout << "CNF equal operation: " << this << " = " << &rhs << endl;
+        // cout << "ConjunctiveNormalForm equal operation: " << this << " = " << &rhs << endl;
         if (&rhs != this)
         {
             this->left = rhs.left;
@@ -35,13 +35,13 @@ class CNF : public NNF
     };
     
 
-    CNF operator&(CNF const &rhs)
+    ConjunctiveNormalForm operator&(ConjunctiveNormalForm const &rhs)
     {
-        CNF ret;
+        ConjunctiveNormalForm ret;
         if (this->str == rhs.str)
         {
             ret = *this;
-            clean_tree<CNF>((CNF*)&rhs);
+            clean_tree<ConjunctiveNormalForm>((ConjunctiveNormalForm*)&rhs);
             delete this;
         }
         else
@@ -49,14 +49,14 @@ class CNF : public NNF
             ret.type = AND;
             ret.data = '&';
             ret.left = this;
-            ret.right = (CNF*)&rhs;
+            ret.right = (ConjunctiveNormalForm*)&rhs;
             ret.str = "(" + this->str + " & " + rhs.str + ")";
             if (this->value != -1 && rhs.value != -1)
                 ret.value = this->value & rhs.value;
         }
         return (ret);
     };
-    CNF *left;
-    CNF *right;
+    ConjunctiveNormalForm *left;
+    ConjunctiveNormalForm *right;
 
 };

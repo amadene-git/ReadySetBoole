@@ -1,24 +1,5 @@
 #include "readysetboole.h"
 
-void ft_putnbr_base(uint32_t nb, string base, uint32_t baselen)
-{
-    int i = 1;
-    if (baselen == 0)
-    {
-        while (uint32_t(1 << i) <= nb && i < 32)
-            i++;
-        while (i < 32)
-        {
-            cout << 0;
-            i++;
-        }
-        baselen = base.length();
-    }
-    if (nb >= baselen)
-        ft_putnbr_base(nb / baselen, base, baselen);
-    cout << base[nb % baselen];
-}
-
 /////////////////////////////////////////////////////////
 //********************* BTree *************************//
 /////////////////////////////////////////////////////////
