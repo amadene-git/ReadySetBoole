@@ -13,7 +13,7 @@ make
 
 while [ $ret -eq "0" ] && [ $i -ne ${#tab[*]} ]
 do
-    printf  "\n\n${tab[i]}\n\n";
+    printf  "\n\nTest $i: '${tab[i]}'\n";
     ${tab[i]} 2> stderr.log;
     ret=$?;
 

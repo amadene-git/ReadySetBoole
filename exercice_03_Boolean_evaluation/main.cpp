@@ -6,9 +6,9 @@ int main(int ac, char **av) {
     cerr << "Usage: ./eval_formula FORMULA" << endl;
     return (1);
   } else
-    cout << eval_formula(av[1]) << endl;
+    cout << "eval_formula(\"" << av[1] << "\") ==> " << std::boolalpha << eval_formula(av[1]) << endl;
 
-  {  // print tree + truth table
+  { // print tree + truth table
     Node *tree = make_tree(av[1]);
 
     if (!tree) {
