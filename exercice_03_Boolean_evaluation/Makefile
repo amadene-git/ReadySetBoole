@@ -38,6 +38,7 @@ clean		:
 
 fclean		:	clean
 					rm -rf $(NAME) ${LIB}
+					make -C test fclean
 
 re			:	fclean all
 

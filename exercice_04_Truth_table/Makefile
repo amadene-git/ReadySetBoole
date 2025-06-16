@@ -1,31 +1,45 @@
 NAME		=	print_truth_table
+LIB			=	${NAME}.a
 
-SRCS		=	main.cpp\
-				print_truth_table.cpp\
-				../ex03/eval_formula.cpp\
-				../inc/utils.cpp\
+_SRCS		=	main.cpp print_truth_table.cpp
+SDIR		=	srcs
+SRCS		=	$(patsubst %,$(SDIR)/%,$(_SRCS))
 
-OBJS		=	${SRCS:.cpp=.o}
+ODIR		=	objs
+OBJS		=	$(subst ${SDIR},$(ODIR),${SRCS:.cpp=.o})
 
-INCLUDES	= 	-I ../inc/
+INCLUDES	=	-I includes -I ../exercice_03_Boolean_evaluation/includes
+LIBEXT		=	../exercice_03_Boolean_evaluation/eval_formula.a
+DEP			=	$(OBJS:%.o=%.d)
 
-CC			=	clang++ -gdwarf-4 -Wall -Wextra -Werror 
+CC			=	clang++  
+CFLAGS		=	-Wall -Wextra -Werror
 
 
+all			:	${LIBEXT} ${ODIR} ${NAME}
 
-all			:	${NAME}
+${NAME}		:   ${OBJS} 
+					${CC} ${CFLAGS} $(INCLUDES) $^ -o $@ ${LIBEXT} 
+${LIBEXT}	:
+				make -C $(dir ${LIBEXT}) lib
 
-${NAME}		:	${OBJS} 
-					${CC} $(INCLUDES) -o $@ $^ 
+${ODIR}		:
+				mkdir -p objs
 
-%.o			:	%.cpp
-					$(CC) ${INCLUDES} -o $@ -c $^ 
+-include $(DEP)
+$(ODIR)/%.o :	${SDIR}/%.cpp
+					${CC} ${CFLAGS} ${INCLUDES} -MMD -c $< -o $@ 
+
+lib			:	${ODIR} ${LIB}			
+
+${LIB}		:	${OBJS}
+					ar rc $@ $(subst ${ODIR}/main.o,,$^) 
 
 clean		:
-					rm -rf ${OBJS} 
+					rm -rf ${ODIR} *.png *.log
 
 fclean		:	clean
-					rm -rf $(NAME)
+					rm -rf $(NAME) ${LIB}
 
 re			:	fclean all
 
