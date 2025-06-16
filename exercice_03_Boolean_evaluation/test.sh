@@ -36,4 +36,7 @@ do
     ((i=i+1))
 done;
 
+echo -e "\n\n clean binary..."
+make fclean > /dev/null
+
 

@@ -26,17 +26,15 @@ bool eval_formula(char *str) {
       else if (str[i] == '=')
         formula.top() = formula.top() == tmp;
       else {
-        throw std::runtime_error("Error eval_formula(): Bad character");
+        throw std::runtime_error("Error eval_formula(): Invalid formula");
       }
     } else {
-      throw std::runtime_error("Error eval_formula(): Bad character");
-      return (0);
+      throw std::runtime_error("Error eval_formula(): Invalid formula");
     }
   }
 
   if (formula.size() != 1) {
-    std::runtime_error("Error eval_formula(): Bad invalid formula");
-    return (0);
+    throw std::runtime_error("Error eval_formula(): Invalid formula");
   }
   return (formula.top());
 }
