@@ -1,28 +1,35 @@
 NAME		=	eval_formula
 
-SRCS		=	main.cpp\
-				eval_formula.cpp\
-				../exercice_04_Truth_table/print_truth_table.cpp\
-				../inc/utils.cpp\
 
-OBJS		=	${SRCS:.cpp=.o}
+_SRCS		=	main.cpp eval_formula.cpp
+SDIR		=	srcs
+SRCS		=	$(patsubst %,$(SDIR)/%,$(_SRCS))
 
-INCLUDES	= 	-I ../inc/
+_OBJS		=	${SRCS:.cpp=.o}
+ODIR		=	objs
+OBJS		=	$(subst ${SDIR},$(ODIR),$(_OBJS))
 
-CC			=	clang++ -gdwarf-4 -Wall -Wextra -Werror 
+INCLUDES	=	-I includes
+DEP			=	$(OBJS:%.o=%.d)
+
+CC			=	clang++  
+CFLAGS		=	-Wall -Wextra -Werror
 
 
+all			:	${ODIR} ${NAME}
 
-all			:	${NAME}
+${NAME}		:   ${OBJS} 
+					${CC} ${CFLAGS} $(INCLUDES) $^ -o $@ 
 
-${NAME}		:	${OBJS} 
-					${CC} $(INCLUDES) -o $@ $^ 
+${ODIR}		:
+				mkdir -p objs
 
-%.o			:	%.cpp
-					$(CC) ${INCLUDES} -o $@ -c $^ 
+-include $(DEP)
+$(ODIR)/%.o :	${SDIR}/%.cpp
+					${CC} ${CFLAGS} ${INCLUDES} -MMD -c $< -o $@ 
 
 clean		:
-					rm -rf ${OBJS} *.png *.log
+					rm -rf ${ODIR} *.png *.log
 
 fclean		:	clean
 					rm -rf $(NAME)
