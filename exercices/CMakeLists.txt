@@ -1,0 +1,70 @@
+## Adder ##################################################
+add_library(adder
+    00_Adder/adder.cpp
+)
+target_include_directories(adder PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+) #########################################################
+
+
+## Multiplier #############################################
+add_library(multiplier
+    01_Multiplier/multiplier.cpp
+)
+target_include_directories(multiplier PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(multiplier
+	adder
+) #########################################################
+
+
+## GrayCode ###############################################
+add_library(grayCode
+    02_GrayCode/grayCode.cpp
+)
+target_include_directories(grayCode PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+) #########################################################
+
+
+## BooleanEvaluation ######################################
+add_library(booleanEvaluation
+    03_BooleanEvaluation/evalFormula.cpp
+)
+target_include_directories(booleanEvaluation PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+) #########################################################
+
+
+## PrintTruthTable ########################################
+add_library(truthTable
+    04_TruthTable/printTruthTable.cpp
+)
+target_include_directories(truthTable PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(truthTable
+	booleanEvaluation
+	fmt::fmt
+) #########################################################
+
+## NegationNormalForm ########################################
+add_library(negationNormalForm
+    05_NegationNormalForm/negationNormalForm.cpp
+)
+target_include_directories(negationNormalForm PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(negationNormalForm
+PUBLIC	
+btree
+) #########################################################
+
+
+
+# add_subdirectory(exercice_05_NegationNormalForm)
+# add_subdirectory(exercice_06_ConjunctiveNormalForm)
+
+enable_testing()
+add_subdirectory(tests)
