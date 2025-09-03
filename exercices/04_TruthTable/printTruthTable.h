@@ -1,9 +1,10 @@
 #pragma once
 
+#include <fmt/core.h>
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <map>
-#include <cmath>
-#include <fmt/core.h>
 #include <ranges>
 
 #include <03_BooleanEvaluation/evalFormula.h>
