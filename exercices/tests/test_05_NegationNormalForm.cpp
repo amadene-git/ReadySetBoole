@@ -5,7 +5,7 @@
 #include <05_NegationNormalForm/negationNormalForm.h>
 
 BOOST_AUTO_TEST_CASE(basic_test) {
-  std::string str = negation_normal_form("0");
+  std::string str = negation_normal_form("01[]");
 
   if (str.size() == 0) {
     std::cout << "Error: invalid formula" << std::endl;

@@ -5,68 +5,51 @@
 
 #include <lib/Btree.h>
 
-std::string negation_normal_form(char* str);
+std::string negation_normal_form(std::string str);
 
 class NegationNormalForm : public Node {
- public:
-  NegationNormalForm(char data = 0,
-                     std::string str = "",
-                     int type = -1,
-                     NegationNormalForm* left = NULL,
-                     NegationNormalForm* right = NULL,
-                     int value = -1) {
-    this->data = data;
-    this->str = str;
-    this->type = type;
-    this->left = left;
-    this->right = right;
-    this->value = value;
+public:
+  NegationNormalForm(char data,
+                     std::string str,
+                     int type,
+                     NegationNormalForm* left,
+                     NegationNormalForm* right,
+                     int value)
+      : Node() {
+    _data = data;
+    _str = str;
+    _type = type;
+    _left = left;
+    _right = right;
+    _value = value;
   };
 
-  NegationNormalForm(NegationNormalForm const& rhs) {
-    // cout << "NegationNormalForm Copy constructor called -> " << this << endl;
-    *this = rhs;
-  };
-
-  NegationNormalForm& operator=(NegationNormalForm const& rhs) {
-    if (&rhs != this) {
-      this->left = rhs.left;
-      this->right = rhs.right;
-      this->value = rhs.value;
-      this->type = rhs.type;
-      this->str = rhs.str;
-      this->data = rhs.data;
-    }
-    return (*this);
-  };
+  NegationNormalForm() = default;
+  NegationNormalForm(const NegationNormalForm&) = default;
+  NegationNormalForm& operator=(const NegationNormalForm&) = default;
 
   NegationNormalForm operator!() {
     NegationNormalForm ret = *this;
 
-    // cout << "NegationNormalForm operation: NOT " << this << endl;
-    if (this->type == NOT)  // !!A = A
-    {
-      ret = *this->left;
-      delete this->left;
-    } else if (this->type == AND)  // !(A & B) -> !A | !B;
-    {
-      NegationNormalForm* A = new NegationNormalForm(!*this->left);
-      NegationNormalForm* B = new NegationNormalForm(!*this->right);
+    if (_type == NOT) { // !!A = A
+      ret = *_left;
+      delete _left;
+    } else if (_type == AND) { // !(A & B) -> !A | !B;
+      NegationNormalForm* A = new NegationNormalForm(!*_left);
+      NegationNormalForm* B = new NegationNormalForm(!*_right);
       ret = *A | *B;
-    } else if (this->type == OR)  // !(A | B) -> !A & !B;
-    {
-      NegationNormalForm* A = new NegationNormalForm(!*this->left);
-      NegationNormalForm* B = new NegationNormalForm(!*this->right);
+    } else if (_type == OR) { // !(A | B) -> !A & !B;
+      NegationNormalForm* A = new NegationNormalForm(!*_left);
+      NegationNormalForm* B = new NegationNormalForm(!*_right);
       ret = *A & *B;
     } else {
-      // cout << "NegationNormalForm operation: NOT " << this << endl;
-      ret.type = NOT;
-      ret.data = '!';
-      ret.left = this;
-      ret.right = NULL;
-      ret.str = "!" + this->str;
-      if (this->value != -1)
-        ret.value = !(this->value);
+      ret._type = NOT;
+      ret._data = '!';
+      ret._left = this;
+      ret._right = NULL;
+      ret._str = "!" + _str;
+      if (_value != -1)
+        ret._value = !(_value);
 
       return (ret);
     }
@@ -79,13 +62,13 @@ class NegationNormalForm : public Node {
 
     // cout << "NegationNormalForm operation: OR " << this << " | " << &rhs <<
     // endl;
-    ret.type = OR;
-    ret.data = '|';
-    ret.left = this;
-    ret.right = (NegationNormalForm*)&rhs;
-    ret.str = "(" + this->str + " | " + rhs.str + ")";
-    if (this->value != -1 && rhs.value != -1)
-      ret.value = this->value | rhs.value;
+    ret._type = OR;
+    ret._data = '|';
+    ret._left = this;
+    ret._right = (NegationNormalForm*)&rhs;
+    ret._str = "(" + _str + " | " + rhs._str + ")";
+    if (_value != -1 && rhs._value != -1)
+      ret._value = _value | rhs._value;
 
     return (ret);
   };
@@ -94,18 +77,18 @@ class NegationNormalForm : public Node {
 
     // cout << "NegationNormalForm operation: AND " << this << " & " << &rhs <<
     // endl;
-    ret.type = AND;
-    ret.data = '&';
-    ret.left = this;
-    ret.right = (NegationNormalForm*)&rhs;
-    ret.str = "(" + this->str + " & " + rhs.str + ")";
-    if (this->value != -1 && rhs.value != -1)
-      ret.value = this->value & rhs.value;
+    ret._type = AND;
+    ret._data = '&';
+    ret._left = this;
+    ret._right = (NegationNormalForm*)&rhs;
+    ret._str = "(" + _str + " & " + rhs._str + ")";
+    if (_value != -1 && rhs._value != -1)
+      ret._value = _value & rhs._value;
 
     return (ret);
   };
-  NegationNormalForm operator^(
-      NegationNormalForm& rhs)  // A ^ B -> (!A &  B )  |  ( A & !B )
+  NegationNormalForm
+  operator^(NegationNormalForm& rhs) // A ^ B -> (!A &  B )  |  ( A & !B )
   {
     NegationNormalForm ret;
     NegationNormalForm* A = new NegationNormalForm(
@@ -116,7 +99,7 @@ class NegationNormalForm : public Node {
 
     return (ret);
   };
-  NegationNormalForm operator>(NegationNormalForm& rhs)  //    A > B  ->  !A | B
+  NegationNormalForm operator>(NegationNormalForm& rhs) //    A > B  ->  !A |  B
   {
     // cout << "NegationNormalForm operation: IMPY " << this << " > " << &rhs <<
     // endl;
@@ -126,8 +109,8 @@ class NegationNormalForm : public Node {
 
     return (ret);
   };
-  NegationNormalForm operator==(
-      NegationNormalForm& rhs)  // A = B  -> ( A &  B )  |  (!A & !B )
+  NegationNormalForm
+  operator==(NegationNormalForm& rhs) // A = B  -> ( A &  B )  |  (!A & !B )
   {
     NegationNormalForm ret;
     NegationNormalForm* A = new NegationNormalForm(*this & rhs);
@@ -141,6 +124,6 @@ class NegationNormalForm : public Node {
 
   ~NegationNormalForm() {};
 
-  NegationNormalForm* left;
-  NegationNormalForm* right;
+  NegationNormalForm* _left{nullptr};
+  NegationNormalForm* _right{nullptr};
 };
