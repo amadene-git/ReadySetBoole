@@ -5,11 +5,14 @@
 #include <05_NegationNormalForm/negationNormalForm.h>
 
 BOOST_AUTO_TEST_CASE(basic_test) {
-  std::string str = negation_normal_form("01[]");
+//   std::string str = negation_normal_form("01|");
 
-  if (str.size() == 0) {
-    std::cout << "Error: invalid formula" << std::endl;
-  }
+  auto tree = make_tree("AB|");
+  print_btree(tree);
+
+//   if (str.size() == 0) {
+//     std::cout << "Error: invalid formula" << std::endl;
+//   }
   // std::cout << "main ret: "<< str << std::endl;
   // std::cout << str_truth_table(av[1]) << std::endl;
   // std::cout << str_truth_table(str) << std::endl;

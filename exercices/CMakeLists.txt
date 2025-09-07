@@ -49,7 +49,8 @@ target_link_libraries(truthTable
 	fmt::fmt
 ) #########################################################
 
-## NegationNormalForm ########################################
+
+## NegationNormalForm #####################################
 add_library(negationNormalForm
     05_NegationNormalForm/negationNormalForm.cpp
 )
@@ -61,9 +62,6 @@ PUBLIC
 btree
 ) #########################################################
 
-
-
-# add_subdirectory(exercice_05_NegationNormalForm)
 # add_subdirectory(exercice_06_ConjunctiveNormalForm)
 
 enable_testing()
