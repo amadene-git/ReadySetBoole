@@ -4,11 +4,22 @@
 #include <string>
 #include <vector>
 
+enum class TokenType {
+  BOOL,
+  ALPHA,
+  NOT,
+  AND,
+  OR,
+  XOR,
+  IMPLY,
+  EQUAL,
+  UNDEFINED
+};
+
 template <class Data>
 struct Token {
-  enum class Type { BOOL, ALPHA, NOT, AND, OR, XOR, IMPLY, EQUAL, UNDEFINED };
-  Type _type{Type::UNDEFINED};
-  Data _data;
+  TokenType _type{TokenType::UNDEFINED};
+  Data _data{'X'};
 
   template <typename T>
   friend std::ostream& operator<<(std::ostream& os, const Token<T>& token);
@@ -17,31 +28,31 @@ struct Token {
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Token<T>& token) {
   switch (token._type) {
-  case Token<T>::Type::BOOL:
+  case TokenType::BOOL:
     os << fmt::format("token._type = BOOL");
     break;
-  case Token<T>::Type::ALPHA:
-    os << fmt::format("token._type = VAR");
+  case TokenType::ALPHA:
+    os << fmt::format("token._type = ALPHA");
     break;
-  case Token<T>::Type::NOT:
+  case TokenType::NOT:
     os << fmt::format("token._type = NOT");
     break;
-  case Token<T>::Type::AND:
+  case TokenType::AND:
     os << fmt::format("token._type = AND");
     break;
-  case Token<T>::Type::OR:
+  case TokenType::OR:
     os << fmt::format("token._type = OR");
     break;
-  case Token<T>::Type::XOR:
+  case TokenType::XOR:
     os << fmt::format("token._type = XOR");
     break;
-  case Token<T>::Type::IMPLY:
+  case TokenType::IMPLY:
     os << fmt::format("token._type = IMPLY");
     break;
-  case Token<T>::Type::EQUAL:
+  case TokenType::EQUAL:
     os << fmt::format("token._type = EQUAL");
     break;
-  case Token<T>::Type::UNDEFINED:
+  case TokenType::UNDEFINED:
     os << fmt::format("token._type = UNDEFINED");
     break;
 
@@ -59,32 +70,32 @@ std::vector<Token<T>> tokenizeFormula(std::string formula) {
   for (auto c : formula) {
     switch (c) {
     case '0':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::BOOL}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::BOOL}, ._data{c}});
       break;
     case '1':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::BOOL}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::BOOL}, ._data{c}});
       break;
     case '!':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::NOT}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::NOT}, ._data{c}});
       break;
     case '|':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::OR}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::OR}, ._data{c}});
       break;
     case '&':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::AND}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::AND}, ._data{c}});
       break;
     case '^':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::XOR}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::XOR}, ._data{c}});
       break;
     case '=':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::EQUAL}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::EQUAL}, ._data{c}});
       break;
     case '>':
-      tokens.push_back(Token<T>{._type{Token<T>::Type::IMPLY}, ._data{c}});
+      tokens.push_back(Token<T>{._type{TokenType::IMPLY}, ._data{c}});
       break;
     default:
       if (c >= 'A' && c <= 'Z') {
-        tokens.push_back(Token<T>{._type{Token<T>::Type::ALPHA}, ._data{c}});
+        tokens.push_back(Token<T>{._type{TokenType::ALPHA}, ._data{c}});
       }
       throw std::runtime_error(fmt::format("Error bad character: '{}'", c));
       break;

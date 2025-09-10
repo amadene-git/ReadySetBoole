@@ -1,7 +1,5 @@
 ## Btree
 add_library(btree
-    src/Btree.cpp
-    src/Node.cpp
     src/Token.cpp
     src/AMANode.cpp
 )

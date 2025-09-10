@@ -16,17 +16,22 @@ void print_postfix(std::unique_ptr<AMANode<T>> root) {
 }
 
 BOOST_AUTO_TEST_CASE(basic_test) {
-  auto tokens = tokenizeFormula<char>("01&!");
+//   auto tokens = tokenizeFormula<char>("01^");
 
-  for (auto token : tokens) {
-    std::cout << token << std::endl;
-  }
-  auto node = parseTokens<char>(tokens);
-  std::cout << "print postfix" << std::endl;
-  print_btree<char>(*node);
+//   for (auto token : tokens) {
+//     std::cout << token << std::endl;
+//   }
+//   auto node = parseTokens<char>(tokens);
+//   std::cout << "print postfix" << std::endl;
+//   print_btree<char>(*node);
 
-  //   sleep(5);
+//   sleep(5);
 
+//   auto nnf = makeNegationNormalForm(*node);
+//   print_btree<char>(*nnf);
+//   std::ostringstream oss;
+//   getPostfixData(*nnf, oss);
+//   std::cout << oss.str();
   //   auto copy = dup_tree<char>(*node);
   //   copy->_left->_token._data = 'X';
   //   print_btree<char>(*copy);

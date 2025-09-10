@@ -27,11 +27,11 @@ std::unique_ptr<AMANode<T>> parseTokens(std::vector<Token<T>>& tokens) {
     currentNode->_token = token;
 
     switch (token._type) {
-    case Token<T>::Type::BOOL:
-    case Token<T>::Type::ALPHA:
+    case TokenType::BOOL:
+    case TokenType::ALPHA:
       break;
 
-    case Token<T>::Type::NOT:
+    case TokenType::NOT:
       if (stackRPN.empty()) {
         throw std::runtime_error(
             "Error while parsing: unexpected '!' character");
@@ -40,11 +40,11 @@ std::unique_ptr<AMANode<T>> parseTokens(std::vector<Token<T>>& tokens) {
       stackRPN.pop_back();
       break;
 
-    case Token<T>::Type::AND:
-    case Token<T>::Type::OR:
-    case Token<T>::Type::XOR:
-    case Token<T>::Type::IMPLY:
-    case Token<T>::Type::EQUAL:
+    case TokenType::AND:
+    case TokenType::OR:
+    case TokenType::XOR:
+    case TokenType::IMPLY:
+    case TokenType::EQUAL:
       if (stackRPN.size() < 2) {
         throw std::runtime_error("Error while parsing: unexpected operator");
       }
@@ -111,6 +111,17 @@ void gendot(int* ncount, std::stringstream& dotf, AMANode<T>& root, int id) {
 }
 
 template <typename T>
+void getPostfixData(AMANode<T>& root, std::ostringstream& oss) {
+  if (root._left != nullptr) {
+    getPostfixData(*root._left, oss);
+  }
+  if (root._right != nullptr) {
+    getPostfixData(*root._right, oss);
+  }
+  oss << root._token._data;
+}
+
+template <typename T>
 std::unique_ptr<AMANode<T>> dup_tree(AMANode<T>& root) {
   auto node = std::make_unique<AMANode<T>>();
   node->_token = root._token;
@@ -118,5 +129,136 @@ std::unique_ptr<AMANode<T>> dup_tree(AMANode<T>& root) {
     node->_left = dup_tree(*(root._left));
   if (root._right != nullptr)
     node->_right = dup_tree(*(root._right));
+  return std::move(node);
+}
+
+template <class T>
+std::unique_ptr<AMANode<T>>
+makeToken(TokenType type,
+          std::unique_ptr<AMANode<T>> left,
+          std::unique_ptr<AMANode<T>> right = nullptr) {
+
+  auto node = std::make_unique<AMANode<T>>();
+  switch (type) {
+  case TokenType::NOT:
+    node->_token = Token<T>{._type = TokenType::NOT, ._data{'!'}};
+    node->_left = std::move(left);
+    break;
+
+  case TokenType::OR:
+    node->_token = Token<T>{._type = TokenType::OR, ._data{'|'}};
+    node->_left = std::move(left);
+    node->_right = std::move(right);
+    break;
+
+  case TokenType::AND:
+    node->_token = Token<T>{._type = TokenType::AND, ._data{'&'}};
+    node->_left = std::move(left);
+    node->_right = std::move(right);
+    break;
+
+  default:
+    break;
+  }
+  return std::move(node);
+}
+
+template <class T>
+std::unique_ptr<AMANode<T>> NNF_simplifyNOT(std::unique_ptr<AMANode<T>> root) {
+  auto node = std::move(root->_left);
+  std::unique_ptr<AMANode<T>> left;
+  std::unique_ptr<AMANode<T>> right;
+
+  switch (node->_token._type) {
+  case TokenType::NOT: // !!A == A
+    return std::move(node->_left->_left);
+
+  case TokenType::AND: // !(A & B) <===> !A | !B
+    left = makeToken(TokenType::NOT, std::move(node->_left));
+    right = makeToken(TokenType::NOT, std::move(node->_right));
+    return makeToken(TokenType::OR, std::move(left), std::move(right));
+
+  case TokenType::OR: // !(A | B) <===> !A & !B
+    left = makeToken(TokenType::NOT, std::move(node->_left));
+    right = makeToken(TokenType::NOT, std::move(node->_right));
+    return makeToken(TokenType::AND, std::move(left), std::move(right));
+
+  default:
+    return std::move(root);
+  }
+}
+
+template <class T>
+std::unique_ptr<AMANode<T>> NNF_simplifyXOR(
+    std::unique_ptr<AMANode<T>> root) { // A ^ B -> ( !A & B )  |  ( A & !B )
+
+  auto NOT_Left = makeToken(TokenType::NOT, dup_tree(*(root->_left)));
+  auto NOT_Right = makeToken(TokenType::NOT, dup_tree(*(root->_right)));
+
+  auto nodeLeft =
+      makeToken(TokenType::AND, std::move(NOT_Left), std::move(root->_right));
+
+  auto nodeRight =
+      makeToken(TokenType::AND, std::move(root->_left), std::move(NOT_Right));
+
+  return makeToken(TokenType::OR, std::move(nodeLeft), std::move(nodeRight));
+}
+
+template <class T>
+std::unique_ptr<AMANode<T>>
+NNF_simplifyIMPLY(std::unique_ptr<AMANode<T>> root) { // A > B <===> !A | B
+  auto node = makeToken(TokenType::NOT, std::move(root->_left));
+  return makeToken(TokenType::OR, std::move(node), std::move(root->_right));
+}
+
+template <class T>
+std::unique_ptr<AMANode<T>> NNF_simplifyEQUAL(
+    std::unique_ptr<AMANode<T>> root) { // A = B -> ( A &  B )  |  ( !A & !B )
+
+  auto NOT_Left = makeToken(TokenType::NOT, dup_tree(*(root->_left)));
+  auto NOT_Right = makeToken(TokenType::NOT, dup_tree(*(root->_right)));
+
+  auto nodeLeft = makeToken(TokenType::AND, std::move(root->_left),
+                            std::move(root->_right));
+  auto nodeRight =
+      makeToken(TokenType::AND, std::move(NOT_Left), std::move(NOT_Right));
+
+  return makeToken(TokenType::OR, std::move(nodeLeft), std::move(nodeRight));
+}
+
+template <class T>
+std::unique_ptr<AMANode<T>> makeNegationNormalForm(AMANode<T>& root) {
+  std::unique_ptr<AMANode<T>> left;
+  std::unique_ptr<AMANode<T>> right;
+
+  if (root._left != nullptr) {
+    left = makeNegationNormalForm(*(root._left));
+  }
+  if (root._right != nullptr) {
+    right = makeNegationNormalForm(*(root._right));
+  }
+
+  auto node = std::make_unique<AMANode<T>>();
+  node->_token = root._token;
+  node->_left = std::move(left);
+  node->_right = std::move(right);
+  switch (node->_token._type) {
+  case TokenType::NOT:
+    node = NNF_simplifyNOT(std::move(node));
+    break;
+  case TokenType::XOR:
+    node = NNF_simplifyXOR(std::move(node));
+    break;
+  case TokenType::IMPLY:
+    node = NNF_simplifyIMPLY(std::move(node));
+    break;
+  case TokenType::EQUAL:
+    node = NNF_simplifyEQUAL(std::move(node));
+    break;
+
+  default:
+    break;
+  }
+
   return std::move(node);
 }
