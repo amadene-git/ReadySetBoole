@@ -85,7 +85,7 @@ void print_btree(T* root, std::string filename = "tree.png") {
   system(std::string("rm -rf " + filename).c_str());
   system(std::string("dot -Tpng -o " + filename + " tmp.dot").c_str());
   system("rm -rf tmp.dot");
-  system(std::string("xdg-open " + filename + " 2> /dev/nullptr").c_str());
+  system(std::string("xdg-open " + filename + " 2> /dev/null").c_str());
 }
 
 template <typename T>
