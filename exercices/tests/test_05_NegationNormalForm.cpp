@@ -4,6 +4,28 @@
 
 #include <05_NegationNormalForm/negationNormalForm.h>
 
+/*
+    !!A ->  A
+
+    !(A & B)    -> !A | !B
+    !(A | B)    -> !A & !B
+
+    !(A > B)    ->   A & !B
+    !(A ^ B)    -> ( A | !B )  &  (!A |  B )
+    !(A = B)    -> ( A |  B )  &  (!A | !B)
+
+    A > B       ->  !A |  B
+    A ^ B       -> (!A &  B )  |  ( A & !B )
+    A = B       -> ( A &  B )  |  (!A & !B )
+
+*/
+
 BOOST_AUTO_TEST_CASE(basic_test) {
-  std::cout << negation_normal_form("01^") << std::endl;
+  BOOST_CHECK_EQUAL(negation_normal_form("0!!"), "0");
+  BOOST_CHECK_EQUAL(negation_normal_form("A!!"), "A");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB&!"), "A!B!|");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB|!"), "A!B!&");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB>"), "A!B|");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB="), "AB&A!B!&|");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB|C&!"), "A!B!&C!|");
 }

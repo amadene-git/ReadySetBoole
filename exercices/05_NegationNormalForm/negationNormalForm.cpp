@@ -1,33 +1,116 @@
 #include <05_NegationNormalForm/negationNormalForm.h>
 
-/*
-    !!A ->  A
+namespace {
+template <class T>
+std::unique_ptr<Node<T>> NNF_simplifyNOT(std::unique_ptr<Node<T>> root) {
+  auto node = std::move(root->_left);
+  std::unique_ptr<Node<T>> left;
+  std::unique_ptr<Node<T>> right;
 
-    !(A & B)    -> !A | !B
-    !(A | B)    -> !A & !B
+  switch (node->_token._type) {
+  case TokenType::NOT: // !!A <===> A
+    return std::move(node->_left);
 
-    !(A > B)    ->   A & !B
-    !(A ^ B)    -> ( A | !B )  &  (!A |  B )
-    !(A = B)    -> ( A |  B )  &  (!A | !B)
+  case TokenType::AND: // !(A & B) <===> !A | !B
+    left = makeToken(TokenType::NOT, std::move(node->_left));
+    right = makeToken(TokenType::NOT, std::move(node->_right));
+    return makeToken(TokenType::OR, std::move(left), std::move(right));
 
-    A > B       ->  !A |  B
-    A ^ B       -> (!A &  B )  |  ( A & !B )
-    A = B       -> ( A &  B )  |  (!A & !B )
+  case TokenType::OR: // !(A | B) <===> !A & !B
+    left = makeToken(TokenType::NOT, std::move(node->_left));
+    right = makeToken(TokenType::NOT, std::move(node->_right));
+    return makeToken(TokenType::AND, std::move(left), std::move(right));
 
-*/
+  default:
+    root->_left = std::move(node);
+    return std::move(root);
+  }
+}
+
+template <class T>
+std::unique_ptr<Node<T>> NNF_simplifyXOR(
+    std::unique_ptr<Node<T>> root) { // A ^ B <===> ( !A & B )  |  ( A & !B )
+
+  auto NOT_Left = makeToken(TokenType::NOT, dup_tree(*(root->_left)));
+  auto NOT_Right = makeToken(TokenType::NOT, dup_tree(*(root->_right)));
+
+  auto nodeLeft =
+      makeToken(TokenType::AND, std::move(NOT_Left), std::move(root->_right));
+
+  auto nodeRight =
+      makeToken(TokenType::AND, std::move(root->_left), std::move(NOT_Right));
+
+  return makeToken(TokenType::OR, std::move(nodeLeft), std::move(nodeRight));
+}
+
+template <class T>
+std::unique_ptr<Node<T>>
+NNF_simplifyIMPLY(std::unique_ptr<Node<T>> root) { // A > B <===> !A | B
+  auto node = makeToken(TokenType::NOT, std::move(root->_left));
+  return makeToken(TokenType::OR, std::move(node), std::move(root->_right));
+}
+
+template <class T>
+std::unique_ptr<Node<T>> NNF_simplifyEQUAL(
+    std::unique_ptr<Node<T>> root) { // A = B <===> ( A &  B )  |  ( !A & !B )
+
+  auto NOT_Left = makeToken(TokenType::NOT, dup_tree(*(root->_left)));
+  auto NOT_Right = makeToken(TokenType::NOT, dup_tree(*(root->_right)));
+
+  auto nodeLeft = makeToken(TokenType::AND, std::move(root->_left),
+                            std::move(root->_right));
+  auto nodeRight =
+      makeToken(TokenType::AND, std::move(NOT_Left), std::move(NOT_Right));
+
+  return makeToken(TokenType::OR, std::move(nodeLeft), std::move(nodeRight));
+}
+
+template <class T>
+std::unique_ptr<Node<T>> makeNegationNormalForm(Node<T>& root) {
+  std::unique_ptr<Node<T>> left;
+  std::unique_ptr<Node<T>> right;
+
+  if (root._left != nullptr) {
+    left = makeNegationNormalForm(*(root._left));
+  }
+  if (root._right != nullptr) {
+    right = makeNegationNormalForm(*(root._right));
+  }
+
+  auto node = std::make_unique<Node<T>>();
+  node->_token = root._token;
+  node->_left = std::move(left);
+  node->_right = std::move(right);
+  switch (node->_token._type) {
+  case TokenType::NOT:
+    node = NNF_simplifyNOT(std::move(node));
+    break;
+  case TokenType::XOR:
+    node = NNF_simplifyXOR(std::move(node));
+    break;
+  case TokenType::IMPLY:
+    node = NNF_simplifyIMPLY(std::move(node));
+    break;
+  case TokenType::EQUAL:
+    node = NNF_simplifyEQUAL(std::move(node));
+    break;
+
+  default:
+    break;
+  }
+
+  return std::move(node);
+}
+
+} // namespace
 
 std::string negation_normal_form(std::string str) {
   auto tokens = tokenizeFormula<char>(str);
-  std::cout << "tokenizeFormula" << std::endl;
-
   auto node = parseTokens<char>(tokens);
-  std::cout << "parseTokens" << std::endl;
-
-  auto nnf = makeNegationNormalForm(*node);
-  std::cout << "makeNegationNormalForm" << std::endl;
+  auto nnf = makeNegationNormalForm<char>(*node);
 
   std::ostringstream oss;
   getPostfixData(*nnf, oss);
-  std::cout << oss.str();
+
   return oss.str();
 }

@@ -3,6 +3,6 @@
 #include <iostream>
 #include <string>
 
-#include <lib/AMANode.h>
+#include <lib/Node.h>
 
 std::string negation_normal_form(std::string str);

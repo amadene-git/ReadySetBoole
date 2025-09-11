@@ -96,8 +96,10 @@ std::vector<Token<T>> tokenizeFormula(std::string formula) {
     default:
       if (c >= 'A' && c <= 'Z') {
         tokens.push_back(Token<T>{._type{TokenType::ALPHA}, ._data{c}});
+        break;
       }
-      throw std::runtime_error(fmt::format("Error bad character: '{}'", c));
+      throw std::runtime_error(
+          fmt::format("Error while tokenization: bad character: '{}'", c));
       break;
     }
   }

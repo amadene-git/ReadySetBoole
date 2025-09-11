@@ -1,7 +1,7 @@
 ## Btree
 add_library(btree
     src/Token.cpp
-    src/AMANode.cpp
+    src/Node.cpp
 )
 target_include_directories(btree PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
