@@ -1,49 +1,99 @@
 #include <06_ConjunctiveNormalForm/conjunctiveNormalForm.h>
 
-/*
-std::shared_ptr<Node> distributeOR(const std::shared_ptr<Node>& a,
-                                   const std::shared_ptr<Node>& b) {
-  if (a->type == NodeType::AND) {
-    auto left = distributeOR(a->left, b);
-    auto right = distributeOR(a->right, b);
-    return std::make_shared<Node>(Node{NodeType::AND, 0, left, right});
-  }
-  if (b->type == NodeType::AND) {
-    auto left = distributeOR(a, b->left);
-    auto right = distributeOR(a, b->right);
-    return std::make_shared<Node>(Node{NodeType::AND, 0, left, right});
-  }
-  return std::make_shared<Node>(Node{NodeType::OR, 0, a, b});
+//(A ∨ (B ∧ C)) ⇔ ((A ∨ B) ∧ (A ∨ C))
+
+template <class T>
+std::unique_ptr<Node<T>> distributeOR(std::unique_ptr<Node<T>> a,
+                                      std::unique_ptr<Node<T>> b,
+                                      std::unique_ptr<Node<T>> c) {
+  auto aCopy = dup_tree<T>(*a);
+
+  auto leftNode = makeToken<T>(TokenType::OR, std::move(a), std::move(b));
+  auto rightNode = makeToken<T>(TokenType::OR, std::move(aCopy), std::move(c));
+
+  return makeToken<T>(TokenType::AND, std::move(leftNode),
+                      std::move(rightNode));
 }
 
-std::shared_ptr<Node> toCNF(const std::shared_ptr<Node>& root) {
-  if (!root)
-    return nullptr;
-  if (root->type == NodeType::VAR || root->type == NodeType::NOT)
-    return root;
+template <class T>
+std::unique_ptr<Node<T>> makeDistribution(Node<T>& root) {
+  std::unique_ptr<Node<T>> left;
+  std::unique_ptr<Node<T>> right;
 
-  auto left = toCNF(root->left);
-  auto right = toCNF(root->right);
-
-  if (root->type == NodeType::OR) {
-    return distributeOR(left, right);
+  if (root._left != nullptr) {
+    left = makeDistribution(*(root._left));
   }
-  return std::make_shared<Node>(Node{NodeType::AND, 0, left, right});
+  if (root._right != nullptr) {
+    right = makeDistribution(*(root._right));
+  }
+
+  auto node = std::make_unique<Node<T>>();
+  node->_token = root._token;
+  node->_left = std::move(left);
+  node->_right = std::move(right);
+  if (node->_token._type == TokenType::OR) {
+    if (node->_left->_token._type == TokenType::AND) {
+
+      return distributeOR(std::move(node->_right),
+                          std::move(node->_left->_right),
+                          std::move(node->_left->_left));
+    }
+    if (node->_right->_token._type == TokenType::AND) {
+      return distributeOR(std::move(node->_left),
+                          std::move(node->_right->_right),
+                          std::move(node->_right->_left));
+    }
+  }
+  return std::move(node);
 }
 
-string conjunctive_normal_form(char* formula) {
-  Node* tree = make_tree(formula);
-  NNF* nnftree = make_NNF_tree(tree);
-  ConjunctiveNormalForm* ConjunctiveNormalFormtree =
-      make_ConjunctiveNormalForm_tree(nnftree);
+template <class T>
+std::unique_ptr<Node<T>> moveOperatorsToRight(Node<T>& root) {
+  std::unique_ptr<Node<T>> left;
+  std::unique_ptr<Node<T>> right;
 
-  print_btree<ConjunctiveNormalForm>(ConjunctiveNormalFormtree);
+  if (root._left != nullptr) {
+    left = moveOperatorsToRight(*(root._left));
+  }
+  if (root._right != nullptr) {
+    right = moveOperatorsToRight(*(root._right));
+  }
 
-  string ret = treetostr(ConjunctiveNormalFormtree);
-  clean_tree<Node>(tree);
-  clean_tree<NNF>(nnftree);
-  clean_tree<ConjunctiveNormalForm>(ConjunctiveNormalFormtree);
+  auto node = std::make_unique<Node<T>>();
+  node->_token = root._token;
 
-  return (ret);
+  bool isRootOperator = node->_token._type == TokenType::OR ||
+                        node->_token._type == TokenType::AND;
+  if (isRootOperator) {
+    bool isLeftOperator = left->_token._type == TokenType::OR ||
+                          left->_token._type == TokenType::AND;
+    bool isRightOperator = right->_token._type == TokenType::OR ||
+                           right->_token._type == TokenType::AND;
+    if (isLeftOperator && !isRightOperator) {
+      node->_left = std::move(right);
+      node->_right = std::move(left);
+    } else {
+      node->_left = std::move(left);
+      node->_right = std::move(right);
+    }
+  } else {
+    node->_left = std::move(left);
+    node->_right = std::move(right);
+  }
+
+  return std::move(node);
 }
-*/
+
+std::string conjunctive_normal_form(std::string formula) {
+  auto tokens = tokenizeFormula<char>(formula);
+  auto node = parseTokens<char>(tokens);
+
+  auto nnf = loopNegationNormalForm<char>(*node);
+  auto cnf = makeDistribution<char>(*nnf);
+  auto finalCnf = moveOperatorsToRight(*cnf);
+
+  std::ostringstream oss;
+  getPostfixData(*finalCnf, oss);
+
+  return oss.str();
+}
