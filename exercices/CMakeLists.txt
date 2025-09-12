@@ -4,7 +4,7 @@ add_library(adder
 )
 target_include_directories(adder PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-) #########################################################
+)
 
 
 ## Multiplier #############################################
@@ -16,7 +16,7 @@ target_include_directories(multiplier PUBLIC
 )
 target_link_libraries(multiplier
 	adder
-) #########################################################
+)
 
 
 ## GrayCode ###############################################
@@ -25,7 +25,7 @@ add_library(grayCode
 )
 target_include_directories(grayCode PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-) #########################################################
+)
 
 
 ## BooleanEvaluation ######################################
@@ -34,7 +34,7 @@ add_library(booleanEvaluation
 )
 target_include_directories(booleanEvaluation PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-) #########################################################
+)
 
 
 ## PrintTruthTable ########################################
@@ -47,7 +47,7 @@ target_include_directories(truthTable PUBLIC
 target_link_libraries(truthTable
 	booleanEvaluation
 	fmt::fmt
-) #########################################################
+)
 
 
 ## NegationNormalForm #####################################
@@ -58,11 +58,24 @@ target_include_directories(negationNormalForm PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(negationNormalForm
-PUBLIC	
-btree
-) #########################################################
+	PUBLIC	
+	btree
+)
 
-# add_subdirectory(exercice_06_ConjunctiveNormalForm)
+
+## ConjunctiveNormalForm #####################################
+add_library(conjunctiveNormalForm
+    06_ConjunctiveNormalForm/conjunctiveNormalForm.cpp
+)
+target_include_directories(conjunctiveNormalForm PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(conjunctiveNormalForm
+	PUBLIC	
+	negationNormalForm
+)
+
+
 
 enable_testing()
 add_subdirectory(tests)

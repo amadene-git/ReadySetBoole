@@ -65,6 +65,7 @@ std::unique_ptr<Node<T>> NNF_simplifyEQUAL(
   return makeToken(TokenType::OR, std::move(nodeLeft), std::move(nodeRight));
 }
 
+} // namespace
 template <class T>
 std::unique_ptr<Node<T>> makeNegationNormalForm(Node<T>& root) {
   std::unique_ptr<Node<T>> left;
@@ -102,13 +103,27 @@ std::unique_ptr<Node<T>> makeNegationNormalForm(Node<T>& root) {
   return std::move(node);
 }
 
-} // namespace
+template <class T>
+std::unique_ptr<Node<T>> loopNegationNormalForm(Node<T>& root) {
+  std::ostringstream oss;
+  auto nnf = makeNegationNormalForm<char>(root);
+  getPostfixData(*nnf, oss);
+
+  std::string strCopy;
+  while (oss.str() != strCopy) {
+    strCopy = oss.str();
+    oss.str("");
+    nnf = makeNegationNormalForm<char>(*nnf);
+    getPostfixData<char>(*nnf, oss);
+  }
+  return std::move(nnf);
+}
 
 std::string negation_normal_form(std::string str) {
   auto tokens = tokenizeFormula<char>(str);
   auto node = parseTokens<char>(tokens);
-  auto nnf = makeNegationNormalForm<char>(*node);
 
+  auto nnf = loopNegationNormalForm<char>(*node);
   std::ostringstream oss;
   getPostfixData(*nnf, oss);
 

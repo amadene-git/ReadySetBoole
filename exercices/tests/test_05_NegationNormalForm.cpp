@@ -20,12 +20,20 @@
 
 */
 
+// TODO test with big string
 BOOST_AUTO_TEST_CASE(basic_test) {
   BOOST_CHECK_EQUAL(negation_normal_form("0!!"), "0");
   BOOST_CHECK_EQUAL(negation_normal_form("A!!"), "A");
+
   BOOST_CHECK_EQUAL(negation_normal_form("AB&!"), "A!B!|");
   BOOST_CHECK_EQUAL(negation_normal_form("AB|!"), "A!B!&");
+
   BOOST_CHECK_EQUAL(negation_normal_form("AB>"), "A!B|");
   BOOST_CHECK_EQUAL(negation_normal_form("AB="), "AB&A!B!&|");
+
+  BOOST_CHECK_EQUAL(negation_normal_form("AB>!"), "AB!&");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB^!"), "AB!|A!B|&");
+  BOOST_CHECK_EQUAL(negation_normal_form("AB=!"), "A!B!|AB|&");
+
   BOOST_CHECK_EQUAL(negation_normal_form("AB|C&!"), "A!B!&C!|");
 }

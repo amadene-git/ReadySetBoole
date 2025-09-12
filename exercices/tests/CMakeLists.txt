@@ -54,3 +54,13 @@ target_link_libraries(testNegationNormalForm
 	negationNormalForm
 )
 add_test(NAME 05_NegationNormalForm COMMAND testNegationNormalForm)
+
+
+## 06
+add_executable(testConjunctiveNormalForm test_06_ConjunctiveNormalForm.cpp)
+target_link_libraries(testConjunctiveNormalForm
+    PRIVATE
+    Boost::unit_test_framework
+	conjunctiveNormalForm
+)
+add_test(NAME 06_ConjunctiveNormalForm COMMAND testConjunctiveNormalForm)
