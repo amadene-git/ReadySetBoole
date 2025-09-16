@@ -62,33 +62,38 @@ std::unique_ptr<Node<T>> moveOperatorsToRight(Node<T>& root) {
   auto node = std::make_unique<Node<T>>();
   node->_token = root._token;
 
-  bool isRootOperator = node->_token._type == TokenType::OR ||
-                        node->_token._type == TokenType::AND;
-  if (isRootOperator) {
-    bool isLeftOperator = left->_token._type == TokenType::OR ||
-                          left->_token._type == TokenType::AND;
-    bool isRightOperator = right->_token._type == TokenType::OR ||
-                           right->_token._type == TokenType::AND;
-    if (isLeftOperator && !isRightOperator) {
-      node->_left = std::move(right);
+  switch (node->_token._type) {
+  case TokenType::OR:
+    if (left->_token._type == TokenType::OR) {
+      node->_left = std::move(left->_left);
+      left->_left = std::move(left->_right);
+      left->_right = std::move(right);
       node->_right = std::move(left);
-    } else {
-      node->_left = std::move(left);
-      node->_right = std::move(right);
+      return moveOperatorsToRight(*node);
     }
-  } else {
+  case TokenType::AND:
+    if (left->_token._type == TokenType::AND) {
+      node->_left = std::move(left->_left);
+      left->_left = std::move(left->_right);
+      left->_right = std::move(right);
+      node->_right = std::move(left);
+      return moveOperatorsToRight(*node);
+    }
+
+  default:
     node->_left = std::move(left);
     node->_right = std::move(right);
-  }
 
+    break;
+  }
   return std::move(node);
 }
 
 std::string conjunctive_normal_form(std::string formula) {
   auto tokens = tokenizeFormula<char>(formula);
   auto node = parseTokens<char>(tokens);
-
   auto nnf = loopNegationNormalForm<char>(*node);
+
   auto cnf = makeDistribution<char>(*nnf);
   auto finalCnf = moveOperatorsToRight(*cnf);
 

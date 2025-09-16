@@ -1,6 +1,5 @@
 #include <04_TruthTable/printTruthTable.h>
 
-namespace {
 void createOperands(std::map<char, bool>& operands, std::string formula) {
   for (char a = 'A'; a <= 'Z'; ++a)
     if (formula.find(a) != std::string::npos)
@@ -38,7 +37,6 @@ std::string convertOperandsSymbolToBool(std::map<char, bool> operands,
   return formulaCopy;
 }
 
-}  // namespace
 
 void print_truth_table(std::string formula) {
   std::map<char, bool> operands;

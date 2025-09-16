@@ -76,6 +76,29 @@ target_link_libraries(conjunctiveNormalForm
 )
 
 
+## SAT #####################################
+add_library(SAT
+    07_SAT/sat.cpp
+)
+target_include_directories(SAT PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(SAT
+	PUBLIC	
+	truthTable
+)
+
+## Powerset #####################################
+add_library(powerset
+    08_Powerset/powerset.cpp
+)
+target_include_directories(powerset PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(powerset
+	PUBLIC	
+)
+
 
 enable_testing()
 add_subdirectory(tests)

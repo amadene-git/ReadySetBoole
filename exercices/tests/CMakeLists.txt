@@ -64,3 +64,23 @@ target_link_libraries(testConjunctiveNormalForm
 	conjunctiveNormalForm
 )
 add_test(NAME 06_ConjunctiveNormalForm COMMAND testConjunctiveNormalForm)
+
+
+## 07
+add_executable(testSAT test_07_SAT.cpp)
+target_link_libraries(testSAT
+    PRIVATE
+    Boost::unit_test_framework
+	SAT
+)
+add_test(NAME 07_SAT COMMAND testSAT)
+
+
+## 08
+add_executable(testPowerset test_08_Powerset.cpp)
+target_link_libraries(testPowerset
+    PRIVATE
+    Boost::unit_test_framework
+	powerset
+)
+add_test(NAME 08_Powerset COMMAND testPowerset)
