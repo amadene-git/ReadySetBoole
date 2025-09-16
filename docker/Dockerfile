@@ -1,21 +1,32 @@
-FROM alpine:3.20
+# Image de base légère
+FROM debian:bullseye-slim
 
-# Installer Clang, CMake, Make, Ninja et dépendances
-RUN apk add --no-cache \
-    clang \
-    clang-extra-tools \
-    cmake \
-    make \
-    ninja \
-    git \
-    bash \
-    zsh \
-    libc-dev \
-    boost-dev \    
-    fmt-dev \
-    build-base
+# Eviter les interactions pendant les installs
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG C.UTF-8
 
-# Définir Clang comme compilateur par défaut
-ENV CC=clang
-ENV CXX=clang++
+# Installer les outils de compilation et Boost.Test
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        clang \
+        cmake \
+        make \
+        g++ \
+        libboost-test-dev \
+        libboost-dev \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+        zsh \
+        libfmt-dev \
 
+
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Crée un répertoire de travail
+#WORKDIR /build
+
+# Copier les sources du projet local dans le conteneur (à adapter)
+#COPY . /build
