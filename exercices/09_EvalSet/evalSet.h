@@ -1,8 +1,5 @@
 #pragma once
 #include <08_Powerset/powerset.h>
-#include <algorithm>
-#include <string>
-#include <vector>
 
 std::vector<int> makeGlobalSet(std::vector<std::vector<int>>& sets);
 

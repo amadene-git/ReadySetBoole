@@ -96,7 +96,8 @@ target_include_directories(powerset PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(powerset
-	PUBLIC	
+	PUBLIC
+	bytesSet	
 )
 
 ## evalSet #####################################
