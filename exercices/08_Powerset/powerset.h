@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <bitset>
 #include <cstdint>
 #include <iostream>
@@ -9,12 +10,39 @@
 class BytesSet {
 public:
   BytesSet() = delete;
+  BytesSet(const BytesSet&) = default;
+  BytesSet& operator=(const BytesSet&) = default;
+
   BytesSet(const std::vector<int>& set) : _set(set) {
     _isLastBytesFull = (set.size() % 8 == 0);
     _bytes =
         std::vector<uint8_t>((set.size() / 8) + !_isLastBytesFull, uint8_t{0});
   };
+  BytesSet(const std::vector<int>& globalSet, const std::vector<int>& subSet)
+      : _set(globalSet) {
+    _isLastBytesFull = (_set.size() % 8 == 0);
+
+    _bytes =
+        std::vector<uint8_t>((_set.size() / 8) + !_isLastBytesFull, uint8_t{0});
+
+    for (int i = 0; i < globalSet.size(); ++i) {
+      auto elem = std::find(subSet.begin(), subSet.end(), globalSet[i]);
+      if (elem != subSet.end()) {
+
+        setBit(true, i);
+      }
+    }
+  }
   ~BytesSet() = default;
+
+  void setBit(bool value, int index) {
+    if (value == true) {
+      _bytes[index / 8] |= (1 << (index % 8));
+
+    } else {
+      _bytes[index / 8] &= !(1 << (index % 8));
+    }
+  }
 
   bool incrementLastBits() {
     if (_bytes.back() >= (1 << (_set.size() % 8)) - 1) {
@@ -70,7 +98,45 @@ public:
     return _bytes.size();
   }
 
-private:
+  void NOT() {
+    for (auto& elem : _bytes) {
+      elem = 0;
+    }
+  }
+
+  void AND(BytesSet& rhs) {
+    for (int i = 0; i < _bytes.size(); ++i) {
+      std::cout << i << std::endl;
+    //   printBytes();
+    //   rhs.printBytes();
+      _bytes[i] &= rhs._bytes[i];
+    }
+  }
+  void OR(const BytesSet& rhs) {
+    for (int i = 0; i < _bytes.size(); ++i) {
+      _bytes[i] |= rhs._bytes[i];
+    }
+  }
+  void XOR(const BytesSet& rhs) {
+    for (int i = 0; i < _bytes.size(); ++i) {
+      _bytes[i] ^= rhs._bytes[i];
+    }
+  }
+  void IMPLY(const BytesSet& rhs) {
+    for (int i = 0; i < _bytes.size(); ++i) {
+      _bytes[i] = (!_bytes[i]) | rhs._bytes[i];
+    }
+  }
+  void EQUAL(const BytesSet& rhs) {
+    for (int i = 0; i < _bytes.size(); ++i) {
+      if (_bytes[i] != rhs._bytes[i]) {
+        NOT();
+        return;
+      }
+    }
+  }
+
+public:
   const std::vector<int>& _set;
   std::vector<uint8_t> _bytes;
   bool _isLastBytesFull{0};

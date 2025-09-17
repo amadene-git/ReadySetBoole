@@ -84,3 +84,13 @@ target_link_libraries(testPowerset
 	powerset
 )
 add_test(NAME 08_Powerset COMMAND testPowerset)
+
+
+## 09
+add_executable(testEvalSet test_09_SetEvaluation.cpp)
+target_link_libraries(testEvalSet
+    PRIVATE
+    Boost::unit_test_framework
+	evalSet
+)
+add_test(NAME 09_EvalSet COMMAND testEvalSet)

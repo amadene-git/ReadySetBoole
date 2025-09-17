@@ -99,6 +99,18 @@ target_link_libraries(powerset
 	PUBLIC	
 )
 
+## evalSet #####################################
+add_library(evalSet
+    09_EvalSet/evalSet.cpp
+)
+target_include_directories(evalSet PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(evalSet
+	PUBLIC	
+	powerset
+)
+
 
 enable_testing()
 add_subdirectory(tests)
