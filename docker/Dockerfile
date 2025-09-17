@@ -3,7 +3,7 @@ FROM debian:bullseye-slim
 
 # Eviter les interactions pendant les installs
 ENV DEBIAN_FRONTEND=noninteractive
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
 # Installer les outils de compilation et Boost.Test
 RUN apt-get update && \
@@ -20,13 +20,6 @@ RUN apt-get update && \
         git \
         zsh \
         libfmt-dev \
-
-
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Crée un répertoire de travail
-#WORKDIR /build
-
-# Copier les sources du projet local dans le conteneur (à adapter)
-#COPY . /build
