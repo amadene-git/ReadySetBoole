@@ -1,56 +1,13 @@
 #include <03_BooleanEvaluation/evalFormula.h>
 
-
-// bool eval_formula(const std::string& formula) {
-//   std::stack<bool> tokens;
-//   bool tmp;
-
-//   for (int i = 0; formula[i]; i++) {
-//     if (formula[i] == '0')
-//       tokens.push(false);
-//     else if (formula[i] == '1')
-//       tokens.push(true);
-//     else if (formula[i] == '!' && tokens.size() >= 1)
-//       tokens.top() = !tokens.top();
-//     else if (tokens.size() >= 2) {
-//       tmp = tokens.top();
-//       tokens.pop();
-
-//       if (formula[i] == '&')
-//         tokens.top() = tokens.top() & tmp;
-//       else if (formula[i] == '|')
-//         tokens.top() = tokens.top() | tmp;
-//       else if (formula[i] == '^')
-//         tokens.top() = tokens.top() ^ tmp;
-//       else if (formula[i] == '>')
-//         tokens.top() = (!tokens.top()) | tmp;
-//       else if (formula[i] == '=')
-//         tokens.top() = tokens.top() == tmp;
-//       else {
-//         throw std::runtime_error(
-//             "Error eval_formula(): Invalid formula unexpected character: " +
-//             formula[i]);
-//       }
-//     } else {
-//       throw std::runtime_error(
-//           "Error eval_formula(): (2) Invalid formula unexpected character: "
-//           + formula[i]);
-//     }
-//   }
-
-//   if (tokens.size() != 1) {
-//     throw std::runtime_error(
-//         "Error eval_formula(): Invalid formula, not enough terms");
-//   }
-//   return (tokens.top());
-// }
-
 class DataBool {
 public:
   DataBool(const char c) : _c{c} {
     if (c == '1') {
+      std::cout << "wesh" << std::endl;
       _value = true;
     } else if (c == '0') {
+      std::cout << "coucou" << std::endl;
       _value = false;
     }
   }
@@ -63,7 +20,7 @@ public:
     return _c;
   };
 
-  void setValue(const bool value) {
+  void setValue(bool value) {
     _value = value;
   };
 
@@ -77,10 +34,13 @@ std::ostream& operator<<(std::ostream& os, const DataBool dataBool) {
   return os;
 }
 
-bool computeNode(const Node<DataBool>& root) {
+bool computeNode(Node<DataBool>& root) {
   switch (root._token._type) {
   case TokenType::BOOL:
-    return root._token._data.getValue();
+    if (root._token._data.getChar() == '0') {
+      root._token._data.setValue(false);
+      return false;
+    }
 
   case TokenType::NOT:
     return !root._token._data.getValue();
@@ -120,10 +80,11 @@ void computeTree(Node<DataBool>& root) {
   root._token._data.setValue(computeNode(root));
 }
 
-bool eval_formula(const std::string& formula) {
+int main() {
+  std::string formula{"0"};
   auto tokens = tokenizeFormula<DataBool>(formula);
   auto btree = parseTokens<DataBool>(tokens);
   computeTree(*btree);
-
-  return btree->_token._data.getValue();
+  print_btree(*btree);
+  return 0;
 }

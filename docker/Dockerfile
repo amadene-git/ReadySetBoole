@@ -19,7 +19,6 @@ RUN apt-get update && \
         curl \
         git \
         zsh \
-        libfmt-dev \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fmt/format.h>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -27,39 +27,40 @@ struct Token {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Token<T>& token) {
+
   switch (token._type) {
   case TokenType::BOOL:
-    os << fmt::format("token._type = BOOL");
+    os << "token._type = BOOL";
     break;
   case TokenType::ALPHA:
-    os << fmt::format("token._type = ALPHA");
+    os << "token._type = ALPHA";
     break;
   case TokenType::NOT:
-    os << fmt::format("token._type = NOT");
+    os << "token._type = NOT";
     break;
   case TokenType::AND:
-    os << fmt::format("token._type = AND");
+    os << "token._type = AND";
     break;
   case TokenType::OR:
-    os << fmt::format("token._type = OR");
+    os << "token._type = OR";
     break;
   case TokenType::XOR:
-    os << fmt::format("token._type = XOR");
+    os << "token._type = XOR";
     break;
   case TokenType::IMPLY:
-    os << fmt::format("token._type = IMPLY");
+    os << "token._type = IMPLY";
     break;
   case TokenType::EQUAL:
-    os << fmt::format("token._type = EQUAL");
+    os << "token._type = EQUAL";
     break;
   case TokenType::UNDEFINED:
-    os << fmt::format("token._type = UNDEFINED");
+    os << "token._type = UNDEFINED";
     break;
 
   default:
     break;
   }
-  os << std::endl << fmt::format("token._data = {}", token._data);
+  os << std::endl << "token._data = " << token._data;
   return os;
 }
 
@@ -70,8 +71,6 @@ std::vector<Token<T>> tokenizeFormula(std::string formula) {
   for (auto c : formula) {
     switch (c) {
     case '0':
-      tokens.push_back(Token<T>{._type{TokenType::BOOL}, ._data{c}});
-      break;
     case '1':
       tokens.push_back(Token<T>{._type{TokenType::BOOL}, ._data{c}});
       break;
@@ -99,7 +98,7 @@ std::vector<Token<T>> tokenizeFormula(std::string formula) {
         break;
       }
       throw std::runtime_error(
-          fmt::format("Error while tokenization: bad character: '{}'", c));
+          std::string{"Error while tokenization: Bad character: '"} + c + "',");
       break;
     }
   }

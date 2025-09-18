@@ -1,15 +1,16 @@
 #pragma once
-#include <cstdint>
-#include <vector>
-#include <limits>
-#include <iostream>
 #include <bitset>
+#include <cstdint>
+#include <iostream>
+#include <limits>
+#include <vector>
+#include <algorithm>
 
 class BytesSet {
 public:
   BytesSet() = delete;
   BytesSet(const BytesSet&) = default;
-  BytesSet& operator=(const BytesSet&) = default;
+  // BytesSet& operator=(const BytesSet&) = default;
 
   BytesSet(const std::vector<int>& set) : _set(set) {
     _isLastBytesComplete = (set.size() % 8 == 0);
@@ -23,7 +24,7 @@ public:
     _bytes = std::vector<uint8_t>((_set.size() / 8) + !_isLastBytesComplete,
                                   uint8_t{0});
 
-    for (int i = 0; i < globalSet.size(); ++i) {
+    for (size_t i = 0; i < globalSet.size(); ++i) {
       auto elem = std::find(subSet.begin(), subSet.end(), globalSet[i]);
       if (elem != subSet.end()) {
 
@@ -38,7 +39,7 @@ public:
       _bytes[index / 8] |= (1 << (index % 8));
 
     } else {
-      _bytes[index / 8] &= !(1 << (index % 8));
+      _bytes[index / 8] &= ~(1 << (index % 8));
     }
   }
 
@@ -55,7 +56,7 @@ public:
   }
 
   bool incrementBits() {
-    for (int i = 0; i < _bytes.size() - !_isLastBytesComplete; ++i) {
+    for (size_t i = 0; i < _bytes.size() - !_isLastBytesComplete; ++i) {
       if (_bytes[i] < std::numeric_limits<uint8_t>::max()) {
         ++_bytes[i];
         return true;
@@ -107,7 +108,7 @@ public:
   }
 
   void AND(BytesSet& rhs) {
-    for (int i = 0; i < _bytes.size(); ++i) {
+    for (size_t i = 0; i < _bytes.size(); ++i) {
       std::cout << i << std::endl;
       //   printBytes();
       //   rhs.printBytes();
@@ -115,22 +116,22 @@ public:
     }
   }
   void OR(const BytesSet& rhs) {
-    for (int i = 0; i < _bytes.size(); ++i) {
+    for (size_t i = 0; i < _bytes.size(); ++i) {
       _bytes[i] |= rhs._bytes[i];
     }
   }
   void XOR(const BytesSet& rhs) {
-    for (int i = 0; i < _bytes.size(); ++i) {
+    for (size_t i = 0; i < _bytes.size(); ++i) {
       _bytes[i] ^= rhs._bytes[i];
     }
   }
   void IMPLY(const BytesSet& rhs) {
-    for (int i = 0; i < _bytes.size(); ++i) {
+    for (size_t i = 0; i < _bytes.size(); ++i) {
       _bytes[i] = (!_bytes[i]) | rhs._bytes[i];
     }
   }
   void EQUAL(const BytesSet& rhs) {
-    for (int i = 0; i < _bytes.size(); ++i) {
+    for (size_t i = 0; i < _bytes.size(); ++i) {
       if (_bytes[i] != rhs._bytes[i]) {
         NOT();
         return;

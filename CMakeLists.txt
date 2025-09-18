@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
-project(MonProjet)
+project(ReadySetBoole)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 
-find_package(fmt REQUIRED)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0 -fsanitize=address,undefined")
 
-# Ajouter les sous-répertoires
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
+
 add_subdirectory(lib)
 add_subdirectory(exercices)
 

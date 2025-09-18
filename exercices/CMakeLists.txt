@@ -35,6 +35,13 @@ add_library(booleanEvaluation
 target_include_directories(booleanEvaluation PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
+target_link_libraries(booleanEvaluation
+	btree
+)
+add_executable(mainTestBooleanEvaluation  03_BooleanEvaluation/main.cpp)
+target_link_libraries(mainTestBooleanEvaluation
+   booleanEvaluation
+)
 
 
 ## PrintTruthTable ########################################
@@ -46,7 +53,6 @@ target_include_directories(truthTable PUBLIC
 )
 target_link_libraries(truthTable
 	booleanEvaluation
-	fmt::fmt
 )
 
 
@@ -112,6 +118,12 @@ target_link_libraries(evalSet
 	powerset
 )
 
+find_package(Boost COMPONENTS unit_test_framework)
+if(Boost_FOUND)
+    enable_testing()
+    add_subdirectory(tests)
+else()
+    message(WARNING "Boost non trouvé. tests désactivées.")
+endif()
 
-enable_testing()
-add_subdirectory(tests)
+

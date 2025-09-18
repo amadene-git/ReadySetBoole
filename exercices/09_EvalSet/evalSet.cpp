@@ -5,7 +5,7 @@ std::vector<int> makeResultSet(std::vector<int>& globalSet,
                                BytesSet& resultBytes) {
 
   std::vector<int> resultSet;
-  for (int i = 0; i < globalSet.size(); ++i) {
+  for (size_t i = 0; i < globalSet.size(); ++i) {
     if (resultBytes._bytes[i / 8] & (1 << i % 8)) {
       resultSet.push_back(globalSet[i]);
     }

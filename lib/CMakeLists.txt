@@ -23,5 +23,11 @@ target_link_libraries(bytesSet
 ) #########################################################
 
 
-enable_testing()
-add_subdirectory(test)
+find_package(Boost COMPONENTS unit_test_framework)
+if(Boost_FOUND)
+    enable_testing()
+    add_subdirectory(test)
+else()
+    message(WARNING "Boost non trouvé. tests désactivées.")
+endif()
+

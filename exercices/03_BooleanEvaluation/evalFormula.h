@@ -3,5 +3,6 @@
 #include <iostream>
 #include <stack>
 #include <string>
+#include <lib/Node.h>
 
-bool eval_formula(std::string str);
+bool eval_formula(const std::string& formula);

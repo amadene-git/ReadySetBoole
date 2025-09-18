@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <fmt/core.h>
 #include <iostream>
 #include <map>
 #include <ranges>

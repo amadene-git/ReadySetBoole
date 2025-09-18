@@ -23,7 +23,7 @@ std::unique_ptr<Node<T>> NNF_simplifyNOT(std::unique_ptr<Node<T>> root) {
 
   default:
     root->_left = std::move(node);
-    return std::move(root);
+    return (root);
   }
 }
 
@@ -100,7 +100,7 @@ std::unique_ptr<Node<T>> makeNegationNormalForm(Node<T>& root) {
     break;
   }
 
-  return std::move(node);
+  return (node);
 }
 
 template <class T>
@@ -116,7 +116,7 @@ std::unique_ptr<Node<T>> loopNegationNormalForm(Node<T>& root) {
     nnf = makeNegationNormalForm<char>(*nnf);
     getPostfixData<char>(*nnf, oss);
   }
-  return std::move(nnf);
+  return nnf;
 }
 
 std::string negation_normal_form(std::string str) {

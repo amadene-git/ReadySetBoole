@@ -1,8 +1,10 @@
 #pragma once
 
 #include <lib/Token.h>
+#include <memory>
 #include <optional>
 #include <sstream>
+
 template <typename Data>
 class Node {
 public:
@@ -129,14 +131,13 @@ std::unique_ptr<Node<T>> dup_tree(Node<T>& root) {
     node->_left = dup_tree(*(root._left));
   if (root._right != nullptr)
     node->_right = dup_tree(*(root._right));
-  return std::move(node);
+  return node;
 }
 
 template <class T>
-std::unique_ptr<Node<T>>
-makeToken(TokenType type,
-          std::unique_ptr<Node<T>> left,
-          std::unique_ptr<Node<T>> right = nullptr) {
+std::unique_ptr<Node<T>> makeToken(TokenType type,
+                                   std::unique_ptr<Node<T>> left,
+                                   std::unique_ptr<Node<T>> right = nullptr) {
 
   auto node = std::make_unique<Node<T>>();
   switch (type) {
@@ -160,6 +161,5 @@ makeToken(TokenType type,
   default:
     break;
   }
-  return std::move(node);
+  return node;
 }
-

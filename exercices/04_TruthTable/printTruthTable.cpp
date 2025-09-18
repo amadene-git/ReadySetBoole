@@ -10,22 +10,22 @@ void createOperands(std::map<char, bool>& operands, std::string formula) {
 
 void updateOperands(std::map<char, bool>& operands, uint8_t value) {
   size_t i{0};
-  for (auto& it : std::views::reverse(operands)) {
-    it.second = bool((value >> i) & 0x1);
+  for (auto it = operands.rbegin(); it != operands.rend(); it++) {
+    it->second = bool((value >> i) & 0x1);
     ++i;
   }
 }
 
 void printOperandsSymbol(std::map<char, bool>& operands) {
   for (auto it : operands)
-    std::cout << fmt::format("| {} ", it.first);
+    std::cout << "| " << it.first << " ";
   std::cout << "| = |" << std::endl;
 }
 
 void printOperandsAndResultValue(std::map<char, bool>& operands, int result) {
   for (auto it : operands)
-    std::cout << fmt::format("| {} ", int{it.second});
-  std::cout << fmt::format("| {} |", result) << std::endl;
+    std::cout << "| " << int{it.second} << " ";
+  std::cout << "| " << result << " |" << std::endl;
 }
 
 std::string convertOperandsSymbolToBool(std::map<char, bool> operands,
@@ -36,7 +36,6 @@ std::string convertOperandsSymbolToBool(std::map<char, bool> operands,
   }
   return formulaCopy;
 }
-
 
 void print_truth_table(std::string formula) {
   std::map<char, bool> operands;

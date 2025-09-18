@@ -44,7 +44,7 @@ std::unique_ptr<Node<T>> makeDistribution(Node<T>& root) {
                           std::move(node->_right->_left));
     }
   }
-  return std::move(node);
+  return (node);
 }
 
 template <class T>
@@ -71,6 +71,7 @@ std::unique_ptr<Node<T>> moveOperatorsToRight(Node<T>& root) {
       node->_right = std::move(left);
       return moveOperatorsToRight(*node);
     }
+    [[fallthrough]];
   case TokenType::AND:
     if (left->_token._type == TokenType::AND) {
       node->_left = std::move(left->_left);
@@ -79,6 +80,7 @@ std::unique_ptr<Node<T>> moveOperatorsToRight(Node<T>& root) {
       node->_right = std::move(left);
       return moveOperatorsToRight(*node);
     }
+    [[fallthrough]];
 
   default:
     node->_left = std::move(left);
@@ -86,7 +88,7 @@ std::unique_ptr<Node<T>> moveOperatorsToRight(Node<T>& root) {
 
     break;
   }
-  return std::move(node);
+  return (node);
 }
 
 std::string conjunctive_normal_form(std::string formula) {
