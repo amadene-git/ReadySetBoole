@@ -3,6 +3,71 @@
 #include <boost/test/included/unit_test.hpp>
 #include <chrono>
 
+#include <iostream>
+#include <map>
+#include <random>
+using namespace std;
+
+unsigned int randomUnsignedInt() {
+  static random_device rd;
+  static mt19937 gen(rd());
+  static uniform_int_distribution<unsigned int> dist(0, UINT_MAX);
+
+  return dist(gen);
+}
+
+double
+calculMoyenne(const std::map<std::pair<uint32_t, uint32_t>, uint64_t>& data) {
+  if (data.empty())
+    return 0.0;
+
+  double somme = 0.0;
+  for (const auto& pair : data) {
+    somme += pair.second;
+  }
+  return somme / data.size();
+}
+
+// // Fonction pour calculer la médiane
+// double calculMediane(const map<int, double>& data) {
+//   if (data.empty())
+//     return 0.0;
+
+//   // On extrait toutes les valeurs dans un vecteur
+//   vector<double> valeurs;
+//   for (const auto& pair : data) {
+//     valeurs.push_back(pair.second);
+//   }
+
+//   // On trie les valeurs
+//   sort(valeurs.begin(), valeurs.end());
+
+//   size_t n = valeurs.size();
+//   if (n % 2 == 0) {
+//     // Si nombre pair d'éléments : moyenne des deux valeurs centrales
+//     return (valeurs[n / 2 - 1] + valeurs[n / 2]) / 2.0;
+//   } else {
+//     // Si nombre impair : valeur centrale
+//     return valeurs[n / 2];
+//   }
+// }
+
+// // Fonction pour calculer l'écart type
+// double calculEcartType(const map<int, double>& data) {
+//   if (data.size() < 2)
+//     return 0.0;
+
+//   double moyenne = calculMoyenne(data);
+//   double sommeCarres = 0.0;
+
+//   for (const auto& pair : data) {
+//     double diff = pair.second - moyenne;
+//     sommeCarres += diff * diff;
+//   }
+
+//   return sqrt(sommeCarres / data.size());
+// }
+
 BOOST_AUTO_TEST_CASE(basic_test) {
   BOOST_CHECK(adder(0, 0) == 0);
   BOOST_CHECK(adder(1, 0) == 1);
@@ -45,34 +110,44 @@ BOOST_AUTO_TEST_CASE(overflow_test) {
   }
 }
 
-// BOOST_AUTO_TEST_CASE(time_complexity_test) {
-//   using namespace std::chrono;
+auto test(unsigned int a, unsigned int b) {
+  using namespace std::chrono;
 
-//   unsigned int max = std::numeric_limits<unsigned int>::max() / 2;
+  auto start = high_resolution_clock::now();
+  for (int i = 0; i < 10000; ++i) {
+    adder(a, b);
+  }
+  auto end = high_resolution_clock::now();
+  return duration_cast<microseconds>(end - start).count();
+}
 
-//   auto test = [&](unsigned int a, unsigned int b) {
-//     auto start = high_resolution_clock::now();
-//     for (int i = 0; i < 1000000;
-//          ++i) { // 1 million d'exécutions pour lisser la mesure
-//       adder(a, b);
-//     }
-//     auto end = high_resolution_clock::now();
-//     return duration_cast<microseconds>(end - start).count();
-//   };
+BOOST_AUTO_TEST_CASE(time_complexity_test) {
+  using namespace std::chrono;
 
-//   long t1 = test(1, 1);                 // très petites valeurs
-//   // long t2 = test(max, max);             // très grandes valeurs
-//   long t2 = test(max * 2, 1);             // très grandes valeurs
-//   long t3 = test(123456789, 987654321); // valeurs aléatoires
+  unsigned int max = std::numeric_limits<unsigned int>::max() / 2;
 
-//   std::cout << "Temps petits nombres  : " << t1 << " ms\n";
-//   std::cout << "Temps grands nombres  : " << t2 << " ms\n";
-//   std::cout << "Temps aléatoires      : " << t3 << " ms\n";
+  std::map<std::pair<uint32_t, uint32_t>, uint64_t> stats;
 
-//   // Vérification empirique : ils doivent être du même ordre de grandeur
-//   if (abs(t1 - t2) < t1 * 0.2 && abs(t2 - t3) < t2 * 0.2) {
-//     std::cout << "Complexité O(1) respectée ✅\n";
-//   } else {
-//     std::cout << "Attention : le temps semble dépendre des valeurs ❌\n";
-//   }
-// }
+  for (int i = 0; i < 500; ++i) {
+
+    uint32_t a = randomUnsignedInt() % (1 << (i % 32));
+    uint32_t b = randomUnsignedInt() % (1 << (i % 32));
+    uint32_t duree;
+    try {
+      duree = test(a, b);
+      stats.insert({{a, b}, duree});
+    } catch (const std::exception& e) {
+      continue;
+    }
+    std::cout << i << " " << duree << std::endl;
+  }
+
+  auto begin = stats.begin();
+  std::cout << "Plus petit nombre  : a = " << begin->first.first
+            << "; b = " << begin->first.second << "; " << begin->second
+            << " ms\n";
+
+  auto end = prev(stats.end());
+  std::cout << "Plus grand nombre  : a = " << end->first.first
+            << "; b = " << end->first.second << "; " << end->second << " ms\n";
+}
