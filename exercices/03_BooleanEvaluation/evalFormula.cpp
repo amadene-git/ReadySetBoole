@@ -46,74 +46,115 @@ bool eval_formula(const std::string& formula) {
   return (tokens.top());
 }
 
-class DataBool {
-public:
-  DataBool(const char c) : _c{c} {
-    if (c == '1') {
-      *_value = true;
-    } else if (c == '0') {
-      *_value = false;
-    }
-  }
+// class DataBool {
+// public:
+//   DataBool(const char c) : _c{c} {
+//     if (c == '1') {
+//       setValue(true);
+//     } else if (c == '0') {
+//       setValue(false);
+//     }
+//   }
 
-  char getChar() const {
-    return _c;
-  };
+//   char getChar() const {
+//     return _c;
+//   };
 
-  std::optional<bool> getValue() const {
-    return _value;
-  };
+//   std::optional<bool> getValue() const {
+//     return _value;
+//   };
 
-  void setValue(const bool value) {
-    *_value = value;
-  };
+//   void setValue(const bool value) {
+//     _value = std::optional<bool>(value);
+//   };
 
-private:
-  char _c;
-  std::optional<bool> _value;
-};
-std::ostream& operator<<(std::ostream& os, const DataBool dataBool) {
-  os << "_c = " << dataBool.getChar() << std::endl;
-  os << "_value = ";
-  if (dataBool.getValue().has_value()) {
-    os << dataBool.getValue().value() << std::endl;
+// private:
+//   char _c;
+//   std::optional<bool> _value;
+// };
 
-  } else {
-    os << "undefined" << std::endl;
-  }
-  return os;
-}
+// std::ostream& operator<<(std::ostream& os, const DataBool dataBool) {
+//   os << "_c = " << dataBool.getChar() << std::endl;
+//   os << "_value = ";
+//   if (dataBool.getValue().has_value()) {
+//     os << dataBool.getValue().value() << std::endl;
+
+//   } else {
+//     os << "undefined" << std::endl;
+//   }
+//   return os;
+// }
 
 // bool computeNode(const Node<DataBool>& root) {
+//   bool isLeftRightHasValue = (root._left != nullptr &&
+//                               root._left->_token._data.getValue().has_value() &&
+//                               root._right != nullptr &&
+//                               root._right->_token._data.getValue().has_value());
 //   switch (root._token._type) {
 //   case TokenType::BOOL:
-//     return root._token._data.getValue();
+//     if (root._token._data.getValue().has_value()) {
+//       return root._token._data.getValue().value();
+//     } else {
+//       throw std::runtime_error("computeNode(BOOL): has no value");
+//     }
+//     break;
 
 //   case TokenType::NOT:
-//     return !root._token._data.getValue();
+//     if (root._left != nullptr &&
+//         root._left->_token._data.getValue().has_value()) {
+//       return !(root._left->_token._data.getValue().value());
+//     } else {
+//       throw std::runtime_error("computeNode(NOT): has no value");
+//     }
+//     break;
 
 //   case TokenType::OR:
-//     return root._left->_token._data.getValue() ||
-//            root._right->_token._data.getValue();
+//     if (isLeftRightHasValue) {
+//       return root._left->_token._data.getValue().value() ||
+//              root._right->_token._data.getValue().value();
+//     } else {
+//       throw std::runtime_error("computeNode(OR): has no value");
+//     }
+//     break;
 
 //   case TokenType::AND:
-//     return root._left->_token._data.getValue() &&
-//            root._right->_token._data.getValue();
+//     if (isLeftRightHasValue) {
+//       return root._left->_token._data.getValue().value() &&
+//              root._right->_token._data.getValue().value();
+//     } else {
+//       throw std::runtime_error("computeNode(AND): has no value");
+//     }
+//     break;
 
 //   case TokenType::XOR:
-//     return root._left->_token._data.getValue() ^
-//            root._right->_token._data.getValue();
-
+//     if (isLeftRightHasValue) {
+//       return root._left->_token._data.getValue().value() ^
+//              root._right->_token._data.getValue().value();
+//     } else {
+//       throw std::runtime_error("computeNode(XOR): has no value");
+//     }
+//     break;
 //   case TokenType::EQUAL:
-//     return root._left->_token._data.getValue() ==
-//            root._right->_token._data.getValue();
+//     if (isLeftRightHasValue) {
+//       return root._left->_token._data.getValue().value() ==
+//              root._right->_token._data.getValue().value();
+//     } else {
+//       throw std::runtime_error("computeNode(EQUAL): has no value");
+//     }
+//     break;
 
 //   case TokenType::IMPLY:
-//     return (!root._left->_token._data.getValue()) |
-//            root._right->_token._data.getValue();
+//     if (isLeftRightHasValue) {
+//       return !(root._left->_token._data.getValue().value()) ||
+//              root._right->_token._data.getValue().value();
+//     } else {
+//       throw std::runtime_error("computeNode(EQUAL): has no value");
+//     }
+//     break;
 
 //   default:
 //     throw std::runtime_error("Error while compute");
+//     break;
 //   }
 // }
 
@@ -132,5 +173,10 @@ std::ostream& operator<<(std::ostream& os, const DataBool dataBool) {
 //   auto root = btree.getRawTree();
 //   computeTree(*root);
 
-//   return root->_token._data.getValue();
+//   if (root->_token._data.getValue().has_value()) {
+//     return root->_token._data.getValue().value();
+
+//   } else {
+//     throw std::runtime_error("eval_formula(): has no value");
+//   }
 // }

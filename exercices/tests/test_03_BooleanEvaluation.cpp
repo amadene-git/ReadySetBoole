@@ -208,3 +208,10 @@ BOOST_AUTO_TEST_CASE(error_test) {
   } catch (const std::runtime_error& e) {
   }
 }
+
+BOOST_AUTO_TEST_CASE(test) {
+getLitteralForm("ABC&D|!E||");
+
+}
+
+

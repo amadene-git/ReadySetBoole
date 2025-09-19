@@ -202,3 +202,22 @@ std::unique_ptr<Node<T>> makeToken(TokenType type,
   }
   return node;
 }
+
+class DataStrRepresentation {
+public:
+  DataStrRepresentation(const char c) {
+    _c = c;
+    _str = c;
+  }
+
+  char _c;
+  std::string _str;
+};
+
+std::ostream& operator<<(std::ostream& os, const DataStrRepresentation& data);
+
+std::string appendExpression(Node<DataStrRepresentation>& root);
+
+void visitNode(Node<DataStrRepresentation>& root);
+
+std::string getLitteralForm(const std::string formula);
