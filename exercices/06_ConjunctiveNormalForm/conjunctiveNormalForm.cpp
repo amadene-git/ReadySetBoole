@@ -6,7 +6,7 @@ template <class T>
 std::unique_ptr<Node<T>> distributeOR(std::unique_ptr<Node<T>> a,
                                       std::unique_ptr<Node<T>> b,
                                       std::unique_ptr<Node<T>> c) {
-  auto aCopy = dup_tree<T>(*a);
+  auto aCopy = Btree<T>::dupTree(*a);
 
   auto leftNode = makeToken<T>(TokenType::OR, std::move(a), std::move(b));
   auto rightNode = makeToken<T>(TokenType::OR, std::move(aCopy), std::move(c));
@@ -92,8 +92,8 @@ std::unique_ptr<Node<T>> moveOperatorsToRight(Node<T>& root) {
 }
 
 std::string conjunctive_normal_form(std::string formula) {
-  auto tokens = tokenizeFormula<char>(formula);
-  auto node = parseTokens<char>(tokens);
+  Btree<char> btree(formula);
+  auto node = btree.getRawTree();
   auto nnf = loopNegationNormalForm<char>(*node);
 
   auto cnf = makeDistribution<char>(*nnf);

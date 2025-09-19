@@ -31,8 +31,8 @@ template <class T>
 std::unique_ptr<Node<T>> NNF_simplifyXOR(
     std::unique_ptr<Node<T>> root) { // A ^ B <===> ( !A & B )  |  ( A & !B )
 
-  auto NOT_Left = makeToken(TokenType::NOT, dup_tree(*(root->_left)));
-  auto NOT_Right = makeToken(TokenType::NOT, dup_tree(*(root->_right)));
+  auto NOT_Left = makeToken(TokenType::NOT, Btree<T>::dupTree(*(root->_left)));
+  auto NOT_Right = makeToken(TokenType::NOT, Btree<T>::dupTree(*(root->_right)));
 
   auto nodeLeft =
       makeToken(TokenType::AND, std::move(NOT_Left), std::move(root->_right));
@@ -54,8 +54,8 @@ template <class T>
 std::unique_ptr<Node<T>> NNF_simplifyEQUAL(
     std::unique_ptr<Node<T>> root) { // A = B <===> ( A &  B )  |  ( !A & !B )
 
-  auto NOT_Left = makeToken(TokenType::NOT, dup_tree(*(root->_left)));
-  auto NOT_Right = makeToken(TokenType::NOT, dup_tree(*(root->_right)));
+  auto NOT_Left = makeToken(TokenType::NOT, Btree<T>::dupTree(*(root->_left)));
+  auto NOT_Right = makeToken(TokenType::NOT, Btree<T>::dupTree(*(root->_right)));
 
   auto nodeLeft = makeToken(TokenType::AND, std::move(root->_left),
                             std::move(root->_right));
@@ -119,9 +119,10 @@ std::unique_ptr<Node<T>> loopNegationNormalForm(Node<T>& root) {
   return nnf;
 }
 
-std::string negation_normal_form(std::string str) {
-  auto tokens = tokenizeFormula<char>(str);
-  auto node = parseTokens<char>(tokens);
+std::string negation_normal_form(const std::string& formula) {
+
+  Btree<char> btree(formula);
+  auto node = btree.getRawTree();
 
   auto nnf = loopNegationNormalForm<char>(*node);
   std::ostringstream oss;

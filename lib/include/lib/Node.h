@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+#include <fstream>
 #include <lib/Token.h>
 #include <memory>
 #include <optional>
@@ -19,8 +21,56 @@ public:
   std::unique_ptr<Node<Data>> _right;
 };
 
+template <typename Data>
+class Btree {
+public:
+  Btree() = delete;
+  Btree(const std::string formula) {
+    auto tokens = tokenizeFormula<Data>(formula);
+    _rawTree = std::move(parseTokens(tokens));
+  }
+  ~Btree() = default;
+
+  std::unique_ptr<Node<Data>> getRawTreeCopy();
+  std::unique_ptr<Node<Data>> getRawTree();
+
+  static std::unique_ptr<Node<Data>> dupTree(Node<Data>& root);
+
+  std::unique_ptr<Node<Data>> parseTokens(std::vector<Token<Data>>& tokens);
+
+private:
+  std::unique_ptr<Node<Data>> _rawTree;
+};
+
+template <class Data>
+std::unique_ptr<Node<Data>> Btree<Data>::getRawTreeCopy() {
+  if (_rawTree == nullptr) {
+    throw std::runtime_error("Btree::getRawTreeCopy(): _rawTree is null");
+  }
+  return dupTree(*_rawTree);
+}
+
+template <class Data>
+std::unique_ptr<Node<Data>> Btree<Data>::getRawTree() {
+  if (_rawTree == nullptr) {
+    throw std::runtime_error("Btree::getRawTree(): _rawTree is null");
+  }
+  return std::move(_rawTree);
+};
+
+template <class Data>
+std::unique_ptr<Node<Data>> Btree<Data>::dupTree(Node<Data>& root) {
+  auto node = std::make_unique<Node<Data>>();
+  node->_token = root._token;
+  if (root._left != nullptr)
+    node->_left = dupTree(*(root._left));
+  if (root._right != nullptr)
+    node->_right = dupTree(*(root._right));
+  return node;
+}
+
 template <typename T>
-std::unique_ptr<Node<T>> parseTokens(std::vector<Token<T>>& tokens) {
+std::unique_ptr<Node<T>> Btree<T>::parseTokens(std::vector<Token<T>>& tokens) {
   std::vector<std::unique_ptr<Node<T>>> stackRPN;
   std::unique_ptr<Node<T>> currentNode;
 
@@ -121,17 +171,6 @@ void getPostfixData(Node<T>& root, std::ostringstream& oss) {
     getPostfixData(*root._right, oss);
   }
   oss << root._token._data;
-}
-
-template <typename T>
-std::unique_ptr<Node<T>> dup_tree(Node<T>& root) {
-  auto node = std::make_unique<Node<T>>();
-  node->_token = root._token;
-  if (root._left != nullptr)
-    node->_left = dup_tree(*(root._left));
-  if (root._right != nullptr)
-    node->_right = dup_tree(*(root._right));
-  return node;
 }
 
 template <class T>

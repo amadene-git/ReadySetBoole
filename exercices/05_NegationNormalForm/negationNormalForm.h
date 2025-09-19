@@ -5,7 +5,7 @@
 
 #include <lib/Node.h>
 
-std::string negation_normal_form(std::string str);
+std::string negation_normal_form(const std::string& str);
 
 template <class T>
 std::unique_ptr<Node<T>> makeNegationNormalForm(Node<T>& root);

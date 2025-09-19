@@ -19,7 +19,7 @@ enum class TokenType {
 template <class Data>
 struct Token {
   TokenType _type{TokenType::UNDEFINED};
-  Data _data{'X'};
+  Data _data{'?'};
 
   template <typename T>
   friend std::ostream& operator<<(std::ostream& os, const Token<T>& token);
@@ -60,12 +60,12 @@ std::ostream& operator<<(std::ostream& os, const Token<T>& token) {
   default:
     break;
   }
-  os << std::endl << "token._data = " << token._data;
+  os << std::endl << "token._data = {" << token._data << "}" << std::endl;
   return os;
 }
 
 template <typename T>
-std::vector<Token<T>> tokenizeFormula(std::string formula) {
+std::vector<Token<T>> tokenizeFormula(const std::string& formula) {
 
   std::vector<Token<T>> tokens;
   for (auto c : formula) {
