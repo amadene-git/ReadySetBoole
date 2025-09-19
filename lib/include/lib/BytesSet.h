@@ -1,10 +1,10 @@
 #pragma once
+#include <algorithm>
 #include <bitset>
 #include <cstdint>
 #include <iostream>
 #include <limits>
 #include <vector>
-#include <algorithm>
 
 class BytesSet {
 public:
@@ -78,7 +78,7 @@ public:
     size_t setSize = _set.size();
 
     for (size_t i = 0; i < setSize; ++i) {
-      if (_bytes[0] & mask) {
+      if (_bytes[i / 8] & mask) {
         resultSet.push_back(_set[i]);
       }
       if (mask >= 128) {
@@ -109,9 +109,6 @@ public:
 
   void AND(BytesSet& rhs) {
     for (size_t i = 0; i < _bytes.size(); ++i) {
-      std::cout << i << std::endl;
-      //   printBytes();
-      //   rhs.printBytes();
       _bytes[i] &= rhs._bytes[i];
     }
   }
@@ -122,7 +119,7 @@ public:
   }
   void XOR(const BytesSet& rhs) {
     for (size_t i = 0; i < _bytes.size(); ++i) {
-      _bytes[i] ^= rhs._bytes[i];
+      _bytes[i] = _bytes[i] ^ rhs._bytes[i];
     }
   }
   void IMPLY(const BytesSet& rhs) {

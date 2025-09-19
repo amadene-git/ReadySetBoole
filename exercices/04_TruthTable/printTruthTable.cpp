@@ -8,7 +8,7 @@ void createOperands(std::map<char, bool>& operands, std::string formula) {
     throw std::runtime_error("Error formula parsing, operands not found");
 }
 
-void updateOperands(std::map<char, bool>& operands, uint8_t value) {
+void updateOperands(std::map<char, bool>& operands, uint32_t value) {
   size_t i{0};
   for (auto it = operands.rbegin(); it != operands.rend(); it++) {
     it->second = bool((value >> i) & 0x1);
@@ -37,13 +37,13 @@ std::string convertOperandsSymbolToBool(std::map<char, bool> operands,
   return formulaCopy;
 }
 
-void print_truth_table(std::string formula) {
+void print_truth_table(const std::string& formula) {
   std::map<char, bool> operands;
 
   createOperands(operands, formula);
   printOperandsSymbol(operands);
 
-  auto indexMax = std::pow(2, operands.size());
+  uint64_t indexMax = std::pow(2, operands.size());
   for (uint32_t i = 0; i < indexMax; ++i) {
     updateOperands(operands, i);
     auto parsedFormula = convertOperandsSymbolToBool(operands, formula);

@@ -66,7 +66,6 @@ BOOST_AUTO_TEST_CASE(bytesSet_increment_test) {
     while (bytesSet.incrementBits()) {
       ++i;
     }
-    bytesSet.printBytes();
     BOOST_CHECK_EQUAL(i, 255);
   }
   {
@@ -77,7 +76,6 @@ BOOST_AUTO_TEST_CASE(bytesSet_increment_test) {
     while (bytesSet.incrementBits()) {
       ++i;
     }
-    bytesSet.printBytes();
     BOOST_CHECK_EQUAL(i, 511);
   }
 }
@@ -95,5 +93,17 @@ BOOST_AUTO_TEST_CASE(bytesSet_makeSet_test) {
     subset = bytesSet.makeSet();
     expectedSet.push_back(1);
     BOOST_CHECK(vectorCmp(subset, expectedSet));
+  }
+}
+
+BOOST_AUTO_TEST_CASE(test) {
+  {
+    auto set = powerset({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    printPowerset(set);
+    BOOST_CHECK_EQUAL(set.size(), pow(2, 9));
+  }
+  {
+    auto set = powerset({});
+    printPowerset(set);
   }
 }

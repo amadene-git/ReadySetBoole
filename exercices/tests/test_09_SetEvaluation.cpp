@@ -38,5 +38,114 @@ BOOST_AUTO_TEST_CASE(evalSet_test) {
     std::cout << i << ", ";
   }
   std::cout << "}" << std::endl;
-  ;
+}
+
+BOOST_AUTO_TEST_CASE(test) {
+  {
+    std::vector<std::vector<int>> sets(
+        {{1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}});
+    auto result = eval_set("ABCDEFGHIJ&&&&&&&&&", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
+  {
+    std::vector<std::vector<int>> sets({{1, 2},
+                                        {1, 3},
+                                        {1, 4},
+                                        {1, 5},
+                                        {1, 6},
+                                        {1, 7},
+                                        {1, 8},
+                                        {1, 9},
+                                        {1, 10},
+                                        {1, 11}});
+    auto result = eval_set("ABCDEFGHIJ&&&&&&&&&", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
+  {
+    std::vector<std::vector<int>> sets({{1, 2},
+                                        {1, 3},
+                                        {1, 4},
+                                        {1, 5},
+                                        {1, 6},
+                                        {1, 7},
+                                        {1, 8},
+                                        {1, 9},
+                                        {1, 10},
+                                        {1, 11},
+                                        {0}});
+    auto result = eval_set("ABCDEFGHIJK&&&&&&&&&&", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
+  {
+    std::vector<std::vector<int>> sets({{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+                                        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}});
+    auto result = eval_set("ABCDEFGHIJK&&&&&&&&&&", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
+  {
+    std::vector<std::vector<int>> sets({{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {}});
+    auto result = eval_set("AB|", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
+  {
+    std::vector<std::vector<int>> sets;
+
+    for (int i = 0; i < 26; ++i) {
+      sets.push_back({1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13,
+                      14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26});
+    }
+    auto result =
+        eval_set("ABCDEFGHIJKLMNOPQRSTUVWXYZ&&&&&&&&&&&&&&&&&&&&&&&&&", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
+  {
+    std::vector<std::vector<int>> sets({{1, 2}, {1, 3}});
+
+    auto result = eval_set("AB^", sets);
+
+    std::cout << "{";
+    for (auto i : result) {
+      std::cout << i << ", ";
+    }
+    std::cout << "}" << std::endl;
+  }
 }

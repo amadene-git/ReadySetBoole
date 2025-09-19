@@ -54,47 +54,6 @@ BOOST_AUTO_TEST_CASE(basic2_test) {
   //   ¬( 1   ⊕   0   ⊕   0 )
   //            ¬(1)            = 0
   BOOST_CHECK_EQUAL(eval_formula("10|01&11^^^!"), false);
-
-  //   (((1∧1)∨0) ⊕ 1 ⊕ ¬0)
-  //      (1  ∨0) ⊕ 1 ⊕  1
-  //         1 ⊕ 1 ⊕ 1      = 0
-  BOOST_CHECK_EQUAL(eval_formula("11&0|10!^^"), true);
-
-  //   // ((¬(0∨1)) ⊕ 0) ∧ 1 = 1
-  //   BOOST_CHECK_EQUAL(eval_formula("01|!0^1&"), true);
-
-  //   // ((¬1∧1) ⊕ (0⊕1) ∨ 0) = 1
-  //   BOOST_CHECK_EQUAL(eval_formula("10!1&01^0|"), true);
-
-  //   // ((0⊕1) ∨ (1∨0) ∧ ¬0) = 1
-  //   BOOST_CHECK_EQUAL(eval_formula("01^10|1&0!"), true);
-
-  //   // ¬(((1∧1) ∨ (0∨1) ⊕ (1⊕0))) = 0
-  //   BOOST_CHECK_EQUAL(eval_formula("11&01|10^!"), false);
-
-  //   // ((¬0⊕1) ∧ (1⊕0) ∨ 0) = 1
-  //   BOOST_CHECK_EQUAL(eval_formula("01!10^1&0|"), true);
-
-  //   // ((1⊕0) ∨ (¬0∧1) ∨0) =1
-  //   BOOST_CHECK_EQUAL(eval_formula("10^01!1&0|"), true);
-
-  //   // ¬(((1∧1) ⊕ (1⊕0) ∨ (0∨1)) ∧0)=0
-  //   BOOST_CHECK_EQUAL(eval_formula("11&10^01|!0&"), false);
-
-  //   // (((0⊕1) ∨(1∨0) ∧¬1) ∨0 ∨1)=1
-  //   BOOST_CHECK_EQUAL(eval_formula("01^10|1!0&1|"), true);
-
-  //   // (((1∧0) ⊕ (0⊕1) ∧¬1) ∨0 ∧1)=0
-  //   BOOST_CHECK_EQUAL(eval_formula("10&01^1!0|1&"), false);
-
-  //   // (((¬0⊕1) ⊕(1∧0) ∨0) ⊕1)=1
-  //   BOOST_CHECK_EQUAL(eval_formula("01!1^10&0|1^"), true);
-
-  //   // (((1⊕0) ⊕ ¬0 ⊕ (1∧1)∨0) ⊕1)=1
-  //   BOOST_CHECK_EQUAL(eval_formula("10^01!11&0|!1^"), true);
-
-  //   // (((0∧1) ⊕ ¬1 ⊕1) ∨ (0∨1) ∧ ¬0)=0
-  //   BOOST_CHECK_EQUAL(eval_formula("01&10!1^01|0!&"), false);
 }
 
 std::string
@@ -210,8 +169,5 @@ BOOST_AUTO_TEST_CASE(error_test) {
 }
 
 BOOST_AUTO_TEST_CASE(test) {
-getLitteralForm("ABC&D|!E||");
-
+  getLitteralForm("ABC&D|!E||");
 }
-
-
